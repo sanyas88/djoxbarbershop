@@ -26,11 +26,25 @@ export async function getOrCreateUser() {
   const clerkUser = await currentUser();
   if (!clerkUser) return null;
 
+  // Admin se određuje preko Clerk publicMetadata.role = "admin" (postavlja se u Clerk dashboardu).
+  const jeAdmin =
+    (clerkUser.publicMetadata as { role?: string } | undefined)?.role === "admin";
+  const uloga = jeAdmin ? "ADMIN" : "KLIJENT";
+
   const existing = await prisma.user.findUnique({
     where: { clerkId: clerkUser.id },
   });
 
-  if (existing) return existing;
+  if (existing) {
+    // Drži ulogu u bazi u skladu sa Clerk-om (ako se promijeni rola).
+    if (existing.uloga !== uloga) {
+      return prisma.user.update({
+        where: { id: existing.id },
+        data: { uloga },
+      });
+    }
+    return existing;
+  }
 
   return prisma.user.create({
     data: {
@@ -38,7 +52,14 @@ export async function getOrCreateUser() {
       email: clerkUser.emailAddresses[0]?.emailAddress ?? "",
       ime: clerkUser.firstName ?? "",
       prezime: clerkUser.lastName ?? "",
-      uloga: "KLIJENT",
+      uloga,
     },
   });
+}
+
+// Vraća korisnika samo ako je ADMIN, inače null (autoritativna provjera za admin rute/stranice).
+export async function getAdminUser() {
+  const user = await getOrCreateUser();
+  if (!user || user.uloga !== "ADMIN") return null;
+  return user;
 }
