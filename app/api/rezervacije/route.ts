@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/auth";
 import { RADNO_VRIJEME, MIN_NAJAVA_MIN, MAX_DANA_UNAPRIJED } from "@/lib/booking-config";
 import { salonLocalParts, danUSedmici } from "@/lib/time";
+import { posaljiRezervacijuNaZapier } from "@/lib/zapier";
 
 // POST /api/rezervacije — klijent potvrđuje rezervaciju.
 // Zaštita: traži prijavljenog korisnika (Clerk); termin se upisuje na NJEGOV nalog.
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
   // 2) Usluga mora postojati i biti aktivna.
   const usluga = await prisma.usluga.findFirst({
     where: { id: uslugaId, aktivna: true },
-    select: { id: true, trajanje: true },
+    select: { id: true, naziv: true, trajanje: true, cijena: true },
   });
   if (!usluga) {
     return NextResponse.json({ greska: "Usluga ne postoji." }, { status: 404 });
@@ -111,7 +112,20 @@ export async function POST(req: NextRequest) {
     select: { id: true, pocetak: true, kraj: true, status: true },
   });
 
-  // (Zapier sinhronizacija — Calendar event + mejl — dolazi u Fazi 7.)
+  // Zapier (Okidač 1): Google Calendar event + potvrdni mejl klijentu.
+  // after() — šalje se nakon odgovora, pa korisnik dobija instant potvrdu.
+  after(() =>
+    posaljiRezervacijuNaZapier({
+      imeKlijenta: `${user.ime} ${user.prezime}`.trim() || "Klijent",
+      emailKlijenta: user.email,
+      usluga: usluga.naziv,
+      cijena: Number(usluga.cijena),
+      trajanjeMin: usluga.trajanje,
+      pocetak: pocetakDate,
+      kraj: krajDate,
+      napomena: napomena?.slice(0, 500) || null,
+    }),
+  );
 
   return NextResponse.json({ ok: true, rezervacija }, { status: 201 });
 }

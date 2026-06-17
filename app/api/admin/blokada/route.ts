@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAdminUser } from "@/lib/auth";
 import { ZAUZETI_STATUSI } from "@/lib/booking-config";
 import { salonWallToUtc, parseDatum } from "@/lib/time";
+import { posaljiBlokaduNaZapier } from "@/lib/zapier";
 
 // POST /api/admin/blokada — admin blokira termin (status BLOKIRANO, bez klijenta i mejla).
 // Zaštita: samo ADMIN; korisnik-vlasnik bloka je sam admin.
@@ -83,7 +84,14 @@ export async function POST(req: NextRequest) {
     select: { id: true, pocetak: true, kraj: true, status: true },
   });
 
-  // (Zapier "🚫 Zauzeto" Calendar event — bez mejla — dolazi u Fazi 7.)
+  // Zapier (Okidač 2): Google Calendar event "🚫 Zauzeto" — BEZ mejla (zaseban Zap).
+  after(() =>
+    posaljiBlokaduNaZapier({
+      pocetak,
+      kraj,
+      napomena: napomena?.slice(0, 500) || "Blokirano",
+    }),
+  );
 
   return NextResponse.json({ ok: true, blokada }, { status: 201 });
 }
