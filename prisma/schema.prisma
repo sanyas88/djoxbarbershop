@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Uloga {
+  ADMIN
+  KLIJENT
+}
+
+enum Status {
+  NA_CEKANJU
+  POTVRDJENO
+  OTKAZANO
+  BLOKIRANO
+}
+
+model User {
+  id          String         @id @default(cuid())
+  clerkId     String         @unique
+  email       String         @unique
+  ime         String
+  prezime     String
+  uloga       Uloga          @default(KLIJENT)
+  rezervacije Rezervacija[]
+  createdAt   DateTime       @default(now())
+
+  @@map("users")
+}
+
+model Usluga {
+  id          String        @id @default(cuid())
+  naziv       String
+  trajanje    Int           // trajanje u minutima
+  cijena      Decimal       @db.Decimal(10, 2)
+  opis        String?
+  aktivna     Boolean       @default(true)
+  rezervacije Rezervacija[]
+  createdAt   DateTime      @default(now())
+
+  @@map("usluge")
+}
+
+model Rezervacija {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  uslugaId  String?
+  usluga    Usluga?  @relation(fields: [uslugaId], references: [id], onDelete: SetNull)
+  pocetak   DateTime
+  kraj      DateTime
+  status    Status   @default(NA_CEKANJU)
+  napomena  String?
+  createdAt DateTime @default(now())
+
+  @@index([pocetak, kraj])
+  @@index([userId])
+  @@index([status])
+  @@map("rezervacije")
+}

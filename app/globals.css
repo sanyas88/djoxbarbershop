@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  /* Boje (tačno iz Stitch dizajna) */
+  --color-background: #141313;
+  --color-on-background: #e5e2e1;
+  --color-surface: #141313;
+  --color-surface-container: #201f1f;
+  --color-surface-container-high: #2b2a2a;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-primary: #c8c6c5;
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-blood-red: #D31A1A;
+  --color-muted-gray: #999999;
+  --color-pure-white: #FFFFFF;
+  --color-charcoal-bg: #111111;
+
+  /* Fontovi */
+  --font-headline-lg: var(--font-anton);
+  --font-body-md: var(--font-manrope);
+  --font-accent-label: var(--font-syne);
+  --font-button-text: var(--font-manrope);
+  --font-script: var(--font-dancing);
+
+  /* Razmaci */
+  --spacing-stack-sm: 8px;
+  --spacing-stack-md: 16px;
+  --spacing-stack-lg: 32px;
+  --spacing-gutter: 24px;
+  --spacing-section-gap: 80px;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-on-background);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #141313; }
+::-webkit-scrollbar-thumb { background: #353434; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #D31A1A; }
+
+::selection {
+  background-color: var(--color-blood-red);
+  color: #ffffff;
+}
+
+/* Gradijent preko slika */
+.image-gradient-overlay {
+  background: linear-gradient(to bottom, transparent 0%, rgba(20, 19, 19, 0.8) 100%);
+}
+
+/* Bento grid za galeriju */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+/* Sakrij scrollbar (horizontalni karuseli) */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Marquee animacija (traka brendova) */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Scroll-reveal animacija (uključuje se tek kad JS radi) */
+.reveal-on section {
+  opacity: 0;
+  transform: translateY(2.5rem);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal-on section.in-view {
+  opacity: 1;
+  transform: none;
+}
