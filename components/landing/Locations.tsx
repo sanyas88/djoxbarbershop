@@ -1,71 +1,80 @@
-function LocationCard({
-  src,
-  alt,
-  name,
-  address,
-  hours,
-}: {
-  src: string;
-  alt: string;
-  name: string;
-  address: string;
-  hours: string;
-}) {
-  return (
-    <div className="min-w-[400px] bg-surface-container rounded-2xl p-6 border border-border-subtle">
-      <div className="rounded-xl overflow-hidden h-48 mb-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="w-full h-full object-cover" alt={alt} src={src} />
-      </div>
-      <h3 className="font-headline-lg text-xl uppercase text-pure-white mb-2">{name}</h3>
-      <p className="text-muted-gray text-sm mb-4">{address}</p>
-      <div className="flex items-center gap-2 text-blood-red">
-        <span className="material-symbols-outlined text-sm">schedule</span>
-        <span className="text-xs uppercase font-bold tracking-widest">{hours}</span>
-      </div>
-    </div>
-  );
-}
+import { getTranslations } from "next-intl/server";
+import { salonInfo, salonMapa } from "@/lib/landing-images";
 
-export function Locations() {
+export async function Locations() {
+  const t = await getTranslations("locations");
+  const h = await getTranslations("hours");
+
   return (
-    <section id="lokacije" className="py-section-gap overflow-hidden">
-      <div className="max-w-[1280px] mx-auto px-gutter mb-12 flex justify-between items-end">
-        <div>
-          <h4 className="font-script text-blood-red text-3xl">Lokacije</h4>
-          <h2 className="font-headline-lg text-5xl uppercase text-pure-white">Naše adrese</h2>
+    <section id="lokacije" className="py-section-gap">
+      <div className="mx-auto max-w-[1280px] px-gutter">
+        <div className="mb-12">
+          <h4 className="font-script text-3xl text-blood-red">{t("label")}</h4>
+          <h2 className="font-headline-lg text-5xl uppercase text-pure-white">{t("title")}</h2>
         </div>
-        <div className="flex gap-4">
-          <button className="w-12 h-12 rounded-full border border-border-subtle flex items-center justify-center hover:bg-blood-red transition-all group">
-            <span className="material-symbols-outlined text-pure-white group-hover:scale-110">arrow_back</span>
-          </button>
-          <button className="w-12 h-12 rounded-full border border-border-subtle flex items-center justify-center hover:bg-blood-red transition-all group">
-            <span className="material-symbols-outlined text-pure-white group-hover:scale-110">arrow_forward</span>
-          </button>
+
+        <div className="grid gap-8 lg:grid-cols-5 lg:items-stretch">
+          <div className="relative min-h-[280px] overflow-hidden rounded-2xl border border-border-subtle lg:col-span-3 lg:min-h-[420px]">
+            <div className="absolute inset-0">
+              <iframe
+                title={`Mapa — ${salonInfo.naziv}`}
+                src={salonMapa.embedUrl}
+                className="h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between rounded-2xl border border-border-subtle bg-surface-container p-8 lg:col-span-2">
+            <div>
+              <h3 className="font-headline-lg mb-3 text-2xl uppercase text-pure-white">
+                {salonInfo.naziv}
+              </h3>
+              <p className="mb-4 flex items-start gap-2 text-sm text-muted-gray">
+                <span className="material-symbols-outlined mt-0.5 shrink-0 text-base text-blood-red">
+                  call
+                </span>
+                <a href={salonInfo.telefonLink} className="hover:text-blood-red transition-colors">
+                  {salonInfo.telefon}
+                </a>
+              </p>
+              <p className="mb-6 flex items-start gap-2 text-sm text-muted-gray">
+                <span className="material-symbols-outlined mt-0.5 shrink-0 text-base text-blood-red">
+                  location_on
+                </span>
+                {salonInfo.adresa}
+              </p>
+              <ul className="mb-8 flex flex-col gap-3 text-sm text-muted-gray">
+                {salonInfo.radnoVrijemeStavke.map((s) => (
+                  <li key={s.hourKey} className="flex justify-between gap-4">
+                    <span>{h(s.hourKey)}</span>
+                    <span
+                      className={
+                        "zatvoreno" in s && s.zatvoreno
+                          ? "font-bold text-blood-red"
+                          : "text-pure-white"
+                      }
+                    >
+                      {"zatvoreno" in s && s.zatvoreno ? h("closed") : s.vrijeme}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <a
+              href={salonMapa.otvoriUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-blood-red/40 bg-blood-red/10 px-6 py-3 text-xs font-bold uppercase tracking-widest text-pure-white transition-colors hover:bg-blood-red hover:text-pure-white"
+            >
+              <span className="material-symbols-outlined text-base">directions</span>
+              {t("openMaps")}
+            </a>
+          </div>
         </div>
-      </div>
-      <div className="flex gap-8 px-gutter overflow-x-auto pb-10 scroll-smooth no-scrollbar">
-        <LocationCard
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR2uEg8p8jJ96dMpZcmaWB0v2Y-bF44c2Kj6B_bW3nlhtte7LgXsqarlqwBCrFp5X9QLKw7SvWT6Yz-il1Iqs8qnpJPKXBN44NCPQ0uGa-x_DOogrRhFa67pJw4kunzN89OVCDqCyhRBqIGIauy001pK9xuj8iF4U3HXGaPT8jjJt7OwJFBekzwbaXEJRU4CZfBqmSYhu1Q8eAmcUvgJFYWuDuhRHYO4m7noa9YUSkEKFry3XS8bEbSz1qqiE3rPjS7rCJojXdnrQ"
-          alt="Eksterijer salona u centru grada"
-          name="Centar Grada"
-          address="Glavna ulica 42, Podgorica, Crna Gora"
-          hours="09:00 - 21:00"
-        />
-        <LocationCard
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36ZTDVaAkwj0Jby5bUnA4LrhggfJuEj9uepsnWDziDMenSWvP-S6PqYZWmzU8rVWaCk7JbGNskc3DZAFgOWE753BG-TLcePsbL410fdYDtWnWE4YDXkt7CDR2GdwHJ2hbzeHFsoMBsyZT789kYZaFfS8HnF7SN-8Wnlgjv9uWkY5h_GcgGSqo_XSYs95qXK4EmDvhhdfOySwOqwxo-lFM4ClCOzg-_9UMY9EQD2EWcLUmFw4UWQ84cuDcohB844pjapLfs2Q-LSE"
-          alt="Interijer premium salona"
-          name="Delta City"
-          address="Cetinjski put bb, Podgorica, Crna Gora"
-          hours="10:00 - 22:00"
-        />
-        <LocationCard
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHOh6L87dZDSfFnHBkFvwKDV007VLVFIyKrh8z6w3wy1mE-_wXaXQ0u-cJ5u6dKpcmgjQFF6prvdEFG8hZ6dupE5lFrIGHPR3pWErw1HA4a9aNeJVckwb0YczrFjtevMqn2d3iAc1MDbya4t3k7aC7hqP7dn_HhaZjY5ccStMTIpOTU_yKVKFwhiOfvvvN37tgAJ5XC7zNZWZ6ZMOy0xrGj9XsERjqrRVX3JZRwWQKku4ZosHoI7rkqZDVhmiBIYz00sbScmYTvDA"
-          alt="Ulazni prostor salona sa berberskim stubom"
-          name="Preko Morače"
-          address="Bulevar Džordža Vašingtona 12, Podgorica"
-          hours="08:00 - 20:00"
-        />
       </div>
     </section>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 
 export function OtkaziDugme({
   rezervacijaId,
@@ -10,6 +11,7 @@ export function OtkaziDugme({
   rezervacijaId: string;
   varijanta?: "tekst" | "dugme";
 }) {
+  const t = useTranslations("cancel");
   const router = useRouter();
   const [potvrda, setPotvrda] = useState(false);
   const [slanje, setSlanje] = useState(false);
@@ -24,13 +26,13 @@ export function OtkaziDugme({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setGreska(data.greska ?? "Greška pri otkazivanju.");
+        setGreska(data.greska ?? t("error"));
         setSlanje(false);
         return;
       }
       router.refresh();
     } catch {
-      setGreska("Greška u komunikaciji sa serverom.");
+      setGreska(t("network"));
       setSlanje(false);
     }
   }
@@ -49,7 +51,7 @@ export function OtkaziDugme({
             : "text-xs font-bold uppercase tracking-widest text-muted-gray transition-colors hover:text-blood-red"
         }
       >
-        Otkaži
+        {t("button")}
       </button>
     );
   }
@@ -61,14 +63,14 @@ export function OtkaziDugme({
         disabled={slanje}
         className="text-xs font-bold uppercase tracking-widest text-blood-red disabled:opacity-60"
       >
-        {slanje ? "Otkazujem…" : "Potvrdi"}
+        {slanje ? t("confirming") : t("confirm")}
       </button>
       <button
         onClick={() => setPotvrda(false)}
         disabled={slanje}
         className="text-xs uppercase tracking-widest text-muted-gray"
       >
-        Nazad
+        {t("back")}
       </button>
     </span>
   );

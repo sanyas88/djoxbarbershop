@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { UserButton } from "@clerk/nextjs";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/auth";
@@ -44,7 +45,14 @@ function trajanjeMin(pocetak: Date, kraj: Date): number {
   return Math.round((kraj.getTime() - pocetak.getTime()) / 60_000);
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const user = await getOrCreateUser();
   if (!user) redirect("/sign-in");
   if (user.uloga !== "ADMIN") redirect("/");

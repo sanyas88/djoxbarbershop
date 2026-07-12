@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "title": "DJOX BARBERSHOP | Klesanje samopouzdanja, rez po rez",
+    "description": "Zakaži svoj termin u Djox Barbershop salonu. Šišanje, brijanje i oblikovanje brade — vrhunsko dotjerivanje po tvojoj mjeri."
+  },
+  "nav": {
+    "home": "Početna",
+    "about": "O nama",
+    "services": "Usluge",
+    "location": "Lokacija",
+    "gallery": "Galerija",
+    "book": "Zakaži termin",
+    "bookShort": "ZAKAŽI TERMIN",
+    "appointments": "Termini",
+    "profile": "Profil",
+    "login": "Prijava",
+    "myProfile": "Moj profil",
+    "admin": "Admin",
+    "backHome": "← Početna"
+  },
+  "hero": {
+    "title1": "Klesanje",
+    "title2": "samopouzdanja",
+    "title3": "rez po rez",
+    "subtitle": "Iskusite preciznost dotjerivanja i moderne stilove skrojene da podignu vaše samopouzdanje — u srcu Vlasenice.",
+    "book": "Zakaži termin",
+    "explore": "Istraži"
+  },
+  "brandBar": {
+    "classicCut": "Klasični rez",
+    "urbanFades": "Urban fade",
+    "beardKings": "Brada",
+    "precision": "Preciznost"
+  },
+  "about": {
+    "label": "O nama",
+    "title": "Vaš lokalni barbershop u Vlasenici",
+    "text": "Mali, moderan salon u srcu Vlasenice — jedan berber, puna pažnja. Specijalizovani smo za moderne fade rezove, precizno šišanje i uređivanje brade. Svaki posjet je opušten, brz i prilagođen tvom stilu.",
+    "imageAlt": "Moderni enterijer Djox Barbershop salona",
+    "cardTitle": "Stil",
+    "features": {
+      "cut": "Šišanje",
+      "equipment": "Moderna oprema",
+      "hygiene": "Higijena",
+      "satisfaction": "Zadovoljstvo klijenta"
+    },
+    "stats": {
+      "barber": "Berber, puna pažnja",
+      "services": "Usluge",
+      "hygiene": "Higijena",
+      "prices": "Pristupačne cijene"
+    }
+  },
+  "services": {
+    "label": "Naše usluge",
+    "title": "Preciznost. Stil. Karakter.",
+    "book": "Zakaži termin",
+    "muskoSisanje": {
+      "name": "Muško šišanje",
+      "desc": "Klasično šišanje i stilizovanje.",
+      "alt": "Moderni fade rez u svijetlom salonu"
+    },
+    "sisanjeIzbrijavanje": {
+      "name": "Šišanje sa izbrijvavanjem",
+      "desc": "Detaljno brijanje šejverom za savršen izgled.",
+      "alt": "Skin fade sa linijama"
+    },
+    "uredjivanjeBrade": {
+      "name": "Uređivanje brade",
+      "desc": "Oblikovanje i sređivanje brade po vašem stilu. Fade na bradi.",
+      "alt": "Oblikovanje brade"
+    },
+    "pranjeKose": {
+      "name": "Pranje kose",
+      "desc": "Pranje kose profesionalnim šamponima.",
+      "alt": "Pranje kose u salonu"
+    }
+  },
+  "locations": {
+    "label": "Lokacija",
+    "title": "Naša adresa",
+    "openMaps": "Otvori u Google Maps"
+  },
+  "gallery": {
+    "label": "Galerija",
+    "title": "Naši najnoviji radovi",
+    "mainAlt": "Portret muškarca sa modernom frizurom",
+    "toolsAlt": "Berberski alat u krupnom planu",
+    "shaveAlt": "Klijent uživa u brijanju",
+    "interiorAlt": "Moderni enterijer Djox Barbershop salona"
+  },
+  "bookingCta": {
+    "title": "Zakaži termin",
+    "subtitle": "Rezerviši termin online ili nas pozovi na {phone}. Plaćanje: {payment}.",
+    "name": "Vaše ime",
+    "phone": "Broj telefona",
+    "service": "Vrsta usluge",
+    "datetime": "Datum i vrijeme",
+    "submit": "Rezerviši odmah",
+    "bgAlt": "Moderni enterijer Djox Barbershop salona"
+  },
+  "footer": {
+    "menu": "Meni",
+    "hours": "Radno vrijeme",
+    "newsletter": "Newsletter",
+    "newsletterText": "Prijavite se za savjete o stilizovanju i ekskluzivne ponude.",
+    "emailPlaceholder": "Email adresa",
+    "subscribe": "Prijavi se",
+    "copyright": "© 2026 DJOX BARBERSHOP. Sva prava zadržana.",
+    "privacy": "Pravila privatnosti",
+    "links": {
+      "home": "Početna",
+      "services": "Naše usluge",
+      "gallery": "Galerija radova",
+      "contact": "Kontakt informacije"
+    }
+  },
+  "hours": {
+    "monday": "Ponedjeljak",
+    "tueFri": "Utorak – Petak",
+    "satSun": "Subota – Nedjelja",
+    "closed": "Zatvoreno"
+  },
+  "booking": {
+    "metaTitle": "Zakazivanje | Djox Barbershop",
+    "metaDescription": "Izaberi uslugu i termin i zakaži svoj dolazak u Djox Barbershop.",
+    "label": "Zakazivanje",
+    "title": "Rezerviši svoj termin",
+    "steps": {
+      "service": "Usluga",
+      "slot": "Termin",
+      "confirm": "Potvrda"
+    },
+    "step1Title": "Izaberi uslugu",
+    "step1Subtitle": "Odaberi tretman, pa biramo termin.",
+    "loadingServices": "Učitavanje usluga…",
+    "errorServices": "Greška pri učitavanju usluga.",
+    "select": "Izaberi →",
+    "backServices": "← Nazad na usluge",
+    "step2Title": "Izaberi termin",
+    "today": "Danas",
+    "pickDay": "Izaberi dan da vidiš slobodne termine.",
+    "loadingSlots": "Učitavanje termina…",
+    "closedDay": "Tog dana je salon zatvoren.",
+    "noSlots": "Nema slobodnih termina za taj dan. Probaj drugi datum.",
+    "continue": "Nastavi",
+    "backSlot": "← Nazad na termin",
+    "step3Title": "Potvrdi rezervaciju",
+    "summary": {
+      "service": "Usluga",
+      "duration": "Trajanje",
+      "date": "Datum",
+      "time": "Vrijeme",
+      "price": "Cijena"
+    },
+    "note": "Napomena (opciono)",
+    "notePlaceholder": "Npr. fade + oblikovanje brade",
+    "loading": "Učitavanje…",
+    "confirm": "Potvrdi rezervaciju",
+    "confirming": "Zakazujem…",
+    "signInHint": "Još samo prijava — da termin vežemo za tvoj nalog.",
+    "signInConfirm": "Prijavi se i potvrdi",
+    "successTitle": "Termin zakazan!",
+    "successText": "{service} — {date} u {time}. Vidimo se u Djox Barbershop salonu.",
+    "myAppointments": "Moji termini",
+    "errors": {
+      "booking": "Greška pri zakazivanju.",
+      "network": "Greška u komunikaciji sa serverom."
+    },
+    "days": ["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
+    "months": ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "avg", "sep", "okt", "nov", "dec"]
+  },
+  "profile": {
+    "metaTitle": "Moj profil | Djox Barbershop",
+    "greeting": "Dobro došao{ime}",
+    "greetingSub": "Spreman za novo osvježenje?",
+    "nextAppointment": "Sledeći termin",
+    "appointment": "Termin",
+    "countdown": "Odbrojavanje",
+    "noAppointments": "Nemaš zakazanih termina",
+    "noAppointmentsSub": "Vrijeme je za novi rez. Zakaži svoj termin u par klikova.",
+    "book": "Zakaži termin",
+    "visitCount": "Broj poseta",
+    "visits": "posjeta",
+    "firstVisit": "Tvoja prva posjeta tek dolazi!",
+    "thanksReturn": "Hvala što nam se vraćaš!",
+    "upcoming": "Nadolazeći termini",
+    "noOther": "Nemaš drugih zakazanih termina.",
+    "noneScheduled": "Trenutno nemaš zakazanih termina.",
+    "bookNew": "Zakaži novi termin",
+    "lastVisit": "Posljednja posjeta",
+    "noVisitsYet": "Još nije bilo posjeta",
+    "ctaTitle": "Spreman za novi look?",
+    "ctaText": "Izaberi uslugu i slobodan termin — zakazivanje traje manje od minuta.",
+    "bookNow": "Zakaži odmah",
+    "copyright": "© 2026 DJOX BARBERSHOP. Sva prava zadržana."
+  },
+  "cancel": {
+    "button": "Otkaži",
+    "confirm": "Potvrdi",
+    "confirming": "Otkazujem…",
+    "back": "Nazad",
+    "error": "Greška pri otkazivanju.",
+    "network": "Greška u komunikaciji sa serverom."
+  },
+  "common": {
+    "min": "min",
+    "cashOnly": "Samo gotovina"
+  }
+}

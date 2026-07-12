@@ -4,13 +4,13 @@ export const SALON_TZ = "Europe/Sarajevo";
 // Radno vrijeme po danu u sedmici (0 = nedjelja ... 6 = subota).
 // open/close su sati u lokalnom vremenu salona; null = neradni dan.
 export const RADNO_VRIJEME: Record<number, { open: number; close: number } | null> = {
-  0: null, // Nedjelja — zatvoreno
-  1: { open: 9, close: 20 }, // Ponedjeljak
-  2: { open: 9, close: 20 }, // Utorak
-  3: { open: 9, close: 20 }, // Srijeda
-  4: { open: 9, close: 20 }, // Četvrtak
-  5: { open: 9, close: 20 }, // Petak
-  6: { open: 9, close: 16 }, // Subota
+  0: { open: 11, close: 18 }, // Nedjelja
+  1: null, // Ponedjeljak — zatvoreno
+  2: { open: 8, close: 18 }, // Utorak
+  3: { open: 8, close: 18 }, // Srijeda
+  4: { open: 8, close: 18 }, // Četvrtak
+  5: { open: 8, close: 18 }, // Petak
+  6: { open: 11, close: 18 }, // Subota
 };
 
 // Razmak između početaka termina (u minutima).

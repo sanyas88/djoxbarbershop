@@ -5,13 +5,20 @@ import { About } from "@/components/landing/About";
 import { Services } from "@/components/landing/Services";
 import { Locations } from "@/components/landing/Locations";
 import { Gallery } from "@/components/landing/Gallery";
-import { Team } from "@/components/landing/Team";
 import { BookingCta } from "@/components/landing/BookingCta";
 import { Footer } from "@/components/landing/Footer";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingEffects } from "@/components/landing/LandingEffects";
+import { setRequestLocale } from "next-intl/server";
 
-export default function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   return (
     <>
       <Header />
@@ -22,7 +29,6 @@ export default function Home() {
         <Services />
         <Locations />
         <Gallery />
-        <Team />
         <BookingCta />
       </main>
       <Footer />

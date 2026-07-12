@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useAuth, useUser, UserButton, SignInButton } from "@clerk/nextjs";
 
-// Prijavljen: link na profil (+ Admin) i Clerk dugme za nalog/odjavu.
-// Odjavljen: diskretan "Prijava" link (otvara Clerk modal) za stalne klijente.
-// Prijava pri potvrdi rezervacije ostaje nepromijenjena.
 export function HeaderAuth() {
+  const t = useTranslations("nav");
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
 
@@ -16,7 +15,7 @@ export function HeaderAuth() {
     return (
       <SignInButton mode="modal" fallbackRedirectUrl="/moj-profil">
         <button className="font-medium text-muted-gray transition-colors duration-300 hover:text-blood-red">
-          Prijava
+          {t("login")}
         </button>
       </SignInButton>
     );
@@ -32,14 +31,14 @@ export function HeaderAuth() {
           href="/admin"
           className="hidden md:inline font-medium text-muted-gray hover:text-blood-red transition-colors duration-300"
         >
-          Admin
+          {t("admin")}
         </Link>
       )}
       <Link
         href="/moj-profil"
         className="hidden md:inline font-medium text-muted-gray hover:text-blood-red transition-colors duration-300"
       >
-        Moj profil
+        {t("myProfile")}
       </Link>
       <UserButton />
     </>

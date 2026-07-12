@@ -1,4 +1,10 @@
-export function Footer() {
+import { getTranslations } from "next-intl/server";
+import { salonInfo } from "@/lib/landing-images";
+
+export async function Footer() {
+  const t = await getTranslations("footer");
+  const h = await getTranslations("hours");
+
   return (
     <footer className="bg-surface-container-lowest border-t border-border-subtle pt-section-gap pb-10">
       <div className="max-w-[1280px] mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
@@ -9,72 +15,87 @@ export function Footer() {
               DJOX <span className="text-blood-red">BARBER</span>
             </h1>
           </div>
-          <p className="text-muted-gray mb-8">
-            Vaš omiljeni barbershop u srcu Crne Gore. Kvalitet, stil i preciznost su naša obećanja.
-          </p>
+          <p className="text-muted-gray mb-4">{salonInfo.slogan}</p>
+          <p className="text-muted-gray text-sm mb-2">{salonInfo.adresa}</p>
+          <a
+            href={salonInfo.telefonLink}
+            className="text-muted-gray text-sm mb-8 inline-block hover:text-blood-red transition-colors"
+          >
+            {salonInfo.telefon}
+          </a>
           <div className="flex gap-4">
             <a
               className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-muted-gray hover:text-blood-red hover:bg-surface-container transition-all"
-              href="#"
-              aria-label="Facebook"
+              href={salonInfo.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
             >
-              <span className="material-symbols-outlined text-xl">public</span>
+              <span className="material-symbols-outlined text-xl">photo_camera</span>
             </a>
             <a
               className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-muted-gray hover:text-blood-red hover:bg-surface-container transition-all"
-              href="#"
-              aria-label="Email"
+              href={salonInfo.telefonLink}
+              aria-label="Phone"
             >
-              <span className="material-symbols-outlined text-xl">alternate_email</span>
+              <span className="material-symbols-outlined text-xl">call</span>
             </a>
           </div>
         </div>
         <div>
           <h4 className="font-accent-label text-pure-white uppercase text-sm tracking-widest mb-8 border-b border-blood-red/30 pb-2 inline-block">
-            Meni
+            {t("menu")}
           </h4>
           <ul className="flex flex-col gap-4 text-muted-gray">
-            <li><a className="hover:text-blood-red transition-colors" href="#pocetna">Početna</a></li>
-            <li><a className="hover:text-blood-red transition-colors" href="#usluge">Naše usluge</a></li>
-            <li><a className="hover:text-blood-red transition-colors" href="#galerija">Galerija radova</a></li>
-            <li><a className="hover:text-blood-red transition-colors" href="#tim">Naš tim stručnjaka</a></li>
-            <li><a className="hover:text-blood-red transition-colors" href="#rezervacija">Kontakt informacije</a></li>
+            <li><a className="hover:text-blood-red transition-colors" href="#pocetna">{t("links.home")}</a></li>
+            <li><a className="hover:text-blood-red transition-colors" href="#usluge">{t("links.services")}</a></li>
+            <li><a className="hover:text-blood-red transition-colors" href="#galerija">{t("links.gallery")}</a></li>
+            <li><a className="hover:text-blood-red transition-colors" href="#rezervacija">{t("links.contact")}</a></li>
           </ul>
         </div>
         <div>
           <h4 className="font-accent-label text-pure-white uppercase text-sm tracking-widest mb-8 border-b border-blood-red/30 pb-2 inline-block">
-            Radno Vrijeme
+            {t("hours")}
           </h4>
           <ul className="flex flex-col gap-4 text-muted-gray text-sm">
-            <li className="flex justify-between"><span>Pon - Pet:</span> <span className="text-pure-white">09:00 - 21:00</span></li>
-            <li className="flex justify-between"><span>Subota:</span> <span className="text-pure-white">09:00 - 18:00</span></li>
-            <li className="flex justify-between"><span>Nedjelja:</span> <span className="text-blood-red font-bold">Zatvoreno</span></li>
+            {salonInfo.radnoVrijemeStavke.map((s) => (
+              <li key={s.hourKey} className="flex justify-between gap-4">
+                <span>{h(s.hourKey)}</span>
+                <span
+                  className={
+                    "zatvoreno" in s && s.zatvoreno
+                      ? "text-blood-red font-bold"
+                      : "text-pure-white"
+                  }
+                >
+                  {"zatvoreno" in s && s.zatvoreno ? h("closed") : s.vrijeme}
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
         <div>
           <h4 className="font-accent-label text-pure-white uppercase text-sm tracking-widest mb-8 border-b border-blood-red/30 pb-2 inline-block">
-            Newsletter
+            {t("newsletter")}
           </h4>
-          <p className="text-muted-gray text-sm mb-6">
-            Prijavite se za savjete o stilizovanju i ekskluzivne ponude.
-          </p>
+          <p className="text-muted-gray text-sm mb-6">{t("newsletterText")}</p>
           <div className="relative">
             <input
               className="w-full bg-surface-container-high border border-border-subtle rounded-lg py-3 px-4 text-sm focus:ring-blood-red focus:border-blood-red outline-none"
-              placeholder="Email adresa"
+              placeholder={t("emailPlaceholder")}
               type="email"
             />
             <button className="absolute right-2 top-1.5 bg-blood-red text-pure-white px-3 py-1.5 rounded-md text-xs font-bold uppercase hover:brightness-110">
-              Prijavi se
+              {t("subscribe")}
             </button>
           </div>
         </div>
       </div>
       <div className="border-t border-border-subtle pt-10 text-center max-w-[1280px] mx-auto px-gutter">
         <p className="text-muted-gray text-xs uppercase tracking-widest">
-          © 2024 DJOX BARBERSHOP. Sva prava zadržana. |{" "}
+          {t("copyright")} |{" "}
           <a className="hover:text-pure-white underline decoration-blood-red underline-offset-4" href="#">
-            Pravila privatnosti
+            {t("privacy")}
           </a>
         </p>
       </div>

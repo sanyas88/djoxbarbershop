@@ -4,28 +4,28 @@ const prisma = new PrismaClient();
 
 const usluge = [
   {
-    naziv: "Šišanje i stilizovanje",
+    naziv: "Muško šišanje",
+    trajanje: 30,
+    cijena: 10,
+    opis: "Klasično šišanje i stilizovanje.",
+  },
+  {
+    naziv: "Šišanje sa izbrijvavanjem",
     trajanje: 45,
     cijena: 15,
-    opis: "Čisti, precizni rezovi prilagođeni vašem stilu i ličnosti. Naša specijalnost su moderni fade rezovi.",
+    opis: "Detaljno brijanje šejverom za savršen izgled.",
   },
   {
-    naziv: "Brijanje i brada",
-    trajanje: 30,
-    cijena: 12,
-    opis: "Tradicionalno brijanje britvom uz vruće peškire. Oblikovanje brade za uglađen i moderan izgled.",
+    naziv: "Uređivanje brade",
+    trajanje: 20,
+    cijena: 6,
+    opis: "Oblikovanje i sređivanje brade po vašem stilu. Fade na bradi.",
   },
   {
-    naziv: "Full Paket (šišanje + brijanje)",
-    trajanje: 75,
-    cijena: 25,
-    opis: "Kompletan tretman — šišanje, stilizovanje i oblikovanje brade u jednom terminu.",
-  },
-  {
-    naziv: "Farbanje kose",
-    trajanje: 90,
-    cijena: 35,
-    opis: "Profesionalno bojenje kose za odvažan i osvježen stil. Koristimo samo vrhunske preparate.",
+    naziv: "Pranje kose",
+    trajanje: 15,
+    cijena: 5,
+    opis: "Pranje kose profesionalnim šamponima.",
   },
 ];
 

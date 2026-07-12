@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useAuth, SignInButton } from "@clerk/nextjs";
+import { RADNO_VRIJEME } from "@/lib/booking-config";
+import { serviceI18nKey } from "@/lib/service-i18n";
 
 type Usluga = {
   id: string;
@@ -14,24 +17,10 @@ type Usluga = {
 
 type Slot = { pocetak: string; vrijeme: string };
 
-const DAN_NAZIV = ["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"];
-const MJESEC_NAZIV = [
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "maj",
-  "jun",
-  "jul",
-  "avg",
-  "sep",
-  "okt",
-  "nov",
-  "dec",
-];
-
 function StepIndicator({ korak }: { korak: number }) {
-  const koraci = ["Usluga", "Termin", "Potvrda"];
+  const t = useTranslations("booking.steps");
+  const koraci = [t("service"), t("slot"), t("confirm")];
+
   return (
     <div className="flex items-center justify-center gap-2 sm:gap-4 mb-12">
       {koraci.map((naziv, i) => {
@@ -71,8 +60,30 @@ function StepIndicator({ korak }: { korak: number }) {
   );
 }
 
+function useServiceText() {
+  const t = useTranslations("services");
+
+  return {
+    name(naziv: string) {
+      const key = serviceI18nKey(naziv);
+      return key ? t(`${key}.name`) : naziv;
+    },
+    desc(naziv: string, fallback: string | null) {
+      const key = serviceI18nKey(naziv);
+      return key ? t(`${key}.desc`) : (fallback ?? "");
+    },
+  };
+}
+
 export function BookingFlow() {
+  const t = useTranslations("booking");
+  const tCommon = useTranslations("common");
+  const tNav = useTranslations("nav");
+  const serviceText = useServiceText();
   const { isLoaded, isSignedIn } = useAuth();
+
+  const DAN_NAZIV = t.raw("days") as string[];
+  const MJESEC_NAZIV = t.raw("months") as string[];
 
   const [korak, setKorak] = useState<1 | 2 | 3 | 4>(1);
 
@@ -92,7 +103,6 @@ export function BookingFlow() {
   const [slanje, setSlanje] = useState(false);
   const [greska, setGreska] = useState("");
 
-  // Sledećih 30 dana za izbor datuma.
   const dani = useMemo(() => {
     const sada = new Date();
     return Array.from({ length: 30 }, (_, i) => {
@@ -105,11 +115,11 @@ export function BookingFlow() {
         dan: DAN_NAZIV[d.getDay()],
         broj: d.getDate(),
         mjesec: MJESEC_NAZIV[d.getMonth()],
-        zatvoreno: d.getDay() === 0, // Nedjelja zatvoreno
+        zatvoreno: RADNO_VRIJEME[d.getDay()] === null,
         danas: i === 0,
       };
     });
-  }, []);
+  }, [DAN_NAZIV, MJESEC_NAZIV]);
 
   useEffect(() => {
     let aktivno = true;
@@ -120,7 +130,7 @@ export function BookingFlow() {
         const data: Usluga[] = await res.json();
         if (aktivno) setUsluge(data);
       } catch {
-        if (aktivno) setGreskaUsluge("Greška pri učitavanju usluga.");
+        if (aktivno) setGreskaUsluge(t("errorServices"));
       } finally {
         if (aktivno) setUcitavanjeUsluga(false);
       }
@@ -128,9 +138,8 @@ export function BookingFlow() {
     return () => {
       aktivno = false;
     };
-  }, []);
+  }, [t]);
 
-  // Učitaj slotove kad se promijeni usluga ili datum.
   useEffect(() => {
     if (!usluga || !datum) return;
     const controller = new AbortController();
@@ -154,7 +163,6 @@ export function BookingFlow() {
         if (!signal.aborted) setUcitavanjeSlotova(false);
       }
     })();
-    // Prekini prethodni zahtjev kad se izbor promijeni (sprečava trku/zastarjele slotove).
     return () => controller.abort();
   }, [usluga, datum]);
 
@@ -181,8 +189,7 @@ export function BookingFlow() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setGreska(data.greska ?? "Greška pri zakazivanju.");
-        // Ako je termin u međuvremenu zauzet, vrati korisnika na izbor termina.
+        setGreska(data.greska ?? t("errors.booking"));
         if (res.status === 409) {
           setSlot(null);
           setKorak(2);
@@ -191,7 +198,7 @@ export function BookingFlow() {
       }
       setKorak(4);
     } catch {
-      setGreska("Greška u komunikaciji sa serverom.");
+      setGreska(t("errors.network"));
     } finally {
       setSlanje(false);
     }
@@ -206,19 +213,14 @@ export function BookingFlow() {
     <div className="mx-auto max-w-3xl">
       {korak < 4 && <StepIndicator korak={korak} />}
 
-      {/* KORAK 1 — Izbor usluge */}
       {korak === 1 && (
         <div>
           <h2 className="font-headline-lg text-3xl uppercase text-pure-white mb-2">
-            Izaberi uslugu
+            {t("step1Title")}
           </h2>
-          <p className="text-muted-gray mb-8 text-sm">
-            Odaberi tretman, pa biramo termin.
-          </p>
+          <p className="text-muted-gray mb-8 text-sm">{t("step1Subtitle")}</p>
 
-          {ucitavanjeUsluga && (
-            <p className="text-muted-gray">Učitavanje usluga…</p>
-          )}
+          {ucitavanjeUsluga && <p className="text-muted-gray">{t("loadingServices")}</p>}
           {greskaUsluge && <p className="text-blood-red">{greskaUsluge}</p>}
 
           <div className="grid grid-cols-1 gap-4">
@@ -230,13 +232,13 @@ export function BookingFlow() {
               >
                 <div>
                   <h3 className="font-headline-lg text-xl uppercase text-pure-white">
-                    {u.naziv}
+                    {serviceText.name(u.naziv)}
                   </h3>
                   {u.opis && (
-                    <p className="mt-1 text-sm text-muted-gray">{u.opis}</p>
+                    <p className="mt-1 text-sm text-muted-gray">{serviceText.desc(u.naziv, u.opis)}</p>
                   )}
                   <p className="mt-2 text-xs uppercase tracking-widest text-muted-gray">
-                    {u.trajanje} min
+                    {u.trajanje} {tCommon("min")}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
@@ -244,7 +246,7 @@ export function BookingFlow() {
                     {u.cijena} KM
                   </span>
                   <span className="mt-2 block text-xs uppercase tracking-widest text-muted-gray transition-colors group-hover:text-pure-white">
-                    Izaberi →
+                    {t("select")}
                   </span>
                 </div>
               </button>
@@ -253,23 +255,21 @@ export function BookingFlow() {
         </div>
       )}
 
-      {/* KORAK 2 — Izbor datuma i termina */}
       {korak === 2 && usluga && (
         <div>
           <button
             onClick={() => setKorak(1)}
             className="mb-6 text-xs uppercase tracking-widest text-muted-gray hover:text-pure-white"
           >
-            ← Nazad na usluge
+            {t("backServices")}
           </button>
           <h2 className="font-headline-lg text-3xl uppercase text-pure-white mb-2">
-            Izaberi termin
+            {t("step2Title")}
           </h2>
           <p className="text-muted-gray mb-8 text-sm">
-            {usluga.naziv} · {usluga.trajanje} min · {usluga.cijena} KM
+            {serviceText.name(usluga.naziv)} · {usluga.trajanje} {tCommon("min")} · {usluga.cijena} KM
           </p>
 
-          {/* Dani */}
           <div className="no-scrollbar -mx-2 mb-8 flex gap-3 overflow-x-auto px-2 pb-2">
             {dani.map((d) => {
               const aktivan = d.iso === datum;
@@ -287,7 +287,7 @@ export function BookingFlow() {
                   }`}
                 >
                   <span className="text-[10px] uppercase tracking-widest">
-                    {d.danas ? "Danas" : d.dan}
+                    {d.danas ? t("today") : d.dan}
                   </span>
                   <span className="mt-1 text-lg font-bold">{d.broj}</span>
                   <span className="text-[10px] uppercase">{d.mjesec}</span>
@@ -296,20 +296,13 @@ export function BookingFlow() {
             })}
           </div>
 
-          {/* Slotovi */}
-          {!datum && (
-            <p className="text-muted-gray text-sm">Izaberi dan da vidiš slobodne termine.</p>
-          )}
-          {datum && ucitavanjeSlotova && (
-            <p className="text-muted-gray text-sm">Učitavanje termina…</p>
-          )}
+          {!datum && <p className="text-muted-gray text-sm">{t("pickDay")}</p>}
+          {datum && ucitavanjeSlotova && <p className="text-muted-gray text-sm">{t("loadingSlots")}</p>}
           {datum && !ucitavanjeSlotova && zatvoreno && (
-            <p className="text-muted-gray text-sm">Tog dana je salon zatvoren.</p>
+            <p className="text-muted-gray text-sm">{t("closedDay")}</p>
           )}
           {datum && !ucitavanjeSlotova && !zatvoreno && slotovi.length === 0 && (
-            <p className="text-muted-gray text-sm">
-              Nema slobodnih termina za taj dan. Probaj drugi datum.
-            </p>
+            <p className="text-muted-gray text-sm">{t("noSlots")}</p>
           )}
 
           {datum && !ucitavanjeSlotova && slotovi.length > 0 && (
@@ -338,43 +331,42 @@ export function BookingFlow() {
               onClick={() => setKorak(3)}
               className="mt-10 w-full rounded-lg bg-blood-red py-4 font-button-text uppercase tracking-[0.2em] text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95"
             >
-              Nastavi
+              {t("continue")}
             </button>
           )}
         </div>
       )}
 
-      {/* KORAK 3 — Potvrda + Clerk auth */}
       {korak === 3 && usluga && slot && (
         <div>
           <button
             onClick={() => setKorak(2)}
             className="mb-6 text-xs uppercase tracking-widest text-muted-gray hover:text-pure-white"
           >
-            ← Nazad na termin
+            {t("backSlot")}
           </button>
           <h2 className="font-headline-lg text-3xl uppercase text-pure-white mb-8">
-            Potvrdi rezervaciju
+            {t("step3Title")}
           </h2>
 
           <div className="rounded-2xl border border-border-subtle bg-surface-container p-6">
-            <Red naziv="Usluga" vrijednost={usluga.naziv} />
-            <Red naziv="Trajanje" vrijednost={`${usluga.trajanje} min`} />
-            <Red naziv="Datum" vrijednost={datumLabel} />
-            <Red naziv="Vrijeme" vrijednost={slot.vrijeme} />
-            <Red naziv="Cijena" vrijednost={`${usluga.cijena} KM`} zadnji />
+            <Red naziv={t("summary.service")} vrijednost={serviceText.name(usluga.naziv)} />
+            <Red naziv={t("summary.duration")} vrijednost={`${usluga.trajanje} ${tCommon("min")}`} />
+            <Red naziv={t("summary.date")} vrijednost={datumLabel} />
+            <Red naziv={t("summary.time")} vrijednost={slot.vrijeme} />
+            <Red naziv={t("summary.price")} vrijednost={`${usluga.cijena} KM`} zadnji />
           </div>
 
           <div className="mt-6 flex flex-col gap-2">
             <label className="text-xs font-bold uppercase tracking-widest text-muted-gray">
-              Napomena (opciono)
+              {t("note")}
             </label>
             <textarea
               value={napomena}
               onChange={(e) => setNapomena(e.target.value)}
               rows={3}
               maxLength={500}
-              placeholder="Npr. fade + oblikovanje brade"
+              placeholder={t("notePlaceholder")}
               className="rounded-lg border border-border-subtle bg-surface-container-high px-4 py-3 text-on-background transition-all focus:border-blood-red focus:ring-blood-red"
             />
           </div>
@@ -387,23 +379,21 @@ export function BookingFlow() {
 
           <div className="mt-8">
             {!isLoaded ? (
-              <p className="text-muted-gray text-sm">Učitavanje…</p>
+              <p className="text-muted-gray text-sm">{t("loading")}</p>
             ) : isSignedIn ? (
               <button
                 onClick={potvrdi}
                 disabled={slanje}
                 className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-60"
               >
-                {slanje ? "Zakazujem…" : "Potvrdi rezervaciju"}
+                {slanje ? t("confirming") : t("confirm")}
               </button>
             ) : (
               <>
-                <p className="mb-4 text-center text-sm text-muted-gray">
-                  Još samo prijava — da termin vežemo za tvoj nalog.
-                </p>
+                <p className="mb-4 text-center text-sm text-muted-gray">{t("signInHint")}</p>
                 <SignInButton mode="modal">
                   <button className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95">
-                    Prijavi se i potvrdi
+                    {t("signInConfirm")}
                   </button>
                 </SignInButton>
               </>
@@ -412,33 +402,33 @@ export function BookingFlow() {
         </div>
       )}
 
-      {/* KORAK 4 — Uspjeh */}
       {korak === 4 && usluga && slot && (
         <div className="text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blood-red">
-            <span className="material-symbols-outlined text-3xl text-pure-white">
-              check
-            </span>
+            <span className="material-symbols-outlined text-3xl text-pure-white">check</span>
           </div>
           <h2 className="font-headline-lg text-4xl uppercase text-pure-white">
-            Termin zakazan!
+            {t("successTitle")}
           </h2>
           <p className="mt-4 text-muted-gray">
-            {usluga.naziv} — {datumLabel} u {slot.vrijeme}. Vidimo se u
-            Djoxbarbershop salonu.
+            {t("successText", {
+              service: serviceText.name(usluga.naziv),
+              date: datumLabel,
+              time: slot.vrijeme,
+            })}
           </p>
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               href="/moj-profil"
               className="rounded-lg bg-blood-red px-8 py-4 font-button-text uppercase tracking-widest text-sm text-pure-white transition-all hover:scale-[1.02]"
             >
-              Moji termini
+              {t("myAppointments")}
             </Link>
             <Link
               href="/"
               className="rounded-lg border border-border-subtle px-8 py-4 font-button-text uppercase tracking-widest text-sm text-on-background transition-all hover:border-blood-red/60"
             >
-              Početna
+              {tNav("home")}
             </Link>
           </div>
         </div>
@@ -462,9 +452,7 @@ function Red({
         zadnji ? "" : "border-b border-border-subtle"
       }`}
     >
-      <span className="text-xs font-bold uppercase tracking-widest text-muted-gray">
-        {naziv}
-      </span>
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-gray">{naziv}</span>
       <span className="text-on-background">{vrijednost}</span>
     </div>
   );

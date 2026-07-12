@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "title": "DJOX BARBERSHOP | Carving confidence, cut by cut",
+    "description": "Book your appointment at Djox Barbershop. Haircuts, shaves and beard grooming — tailored to your style."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "location": "Location",
+    "gallery": "Gallery",
+    "book": "Book appointment",
+    "bookShort": "BOOK NOW",
+    "appointments": "Booking",
+    "profile": "Profile",
+    "login": "Sign in",
+    "myProfile": "My profile",
+    "admin": "Admin",
+    "backHome": "← Home"
+  },
+  "hero": {
+    "title1": "Carving",
+    "title2": "confidence",
+    "title3": "cut by cut",
+    "subtitle": "Experience precision grooming and modern styles tailored to boost your confidence — in the heart of Vlasenica.",
+    "book": "Book appointment",
+    "explore": "Explore"
+  },
+  "brandBar": {
+    "classicCut": "Classic cut",
+    "urbanFades": "Urban fades",
+    "beardKings": "Beard care",
+    "precision": "Precision"
+  },
+  "about": {
+    "label": "About us",
+    "title": "Your local barbershop in Vlasenica",
+    "text": "A small, modern shop in the heart of Vlasenica — one barber, full attention. We specialize in modern fades, precise haircuts and beard grooming. Every visit is relaxed, quick and tailored to your style.",
+    "imageAlt": "Modern Djox Barbershop interior",
+    "cardTitle": "Style",
+    "features": {
+      "cut": "Haircuts",
+      "equipment": "Modern equipment",
+      "hygiene": "Hygiene",
+      "satisfaction": "Client satisfaction"
+    },
+    "stats": {
+      "barber": "One barber, full focus",
+      "services": "Services",
+      "hygiene": "Hygiene",
+      "prices": "Affordable prices"
+    }
+  },
+  "services": {
+    "label": "Our services",
+    "title": "Precision. Style. Character.",
+    "book": "Book appointment",
+    "muskoSisanje": {
+      "name": "Men's haircut",
+      "desc": "Classic haircut and styling.",
+      "alt": "Modern fade in a bright barbershop"
+    },
+    "sisanjeIzbrijavanje": {
+      "name": "Haircut with skin fade",
+      "desc": "Detailed shaver work for a sharp finish.",
+      "alt": "Skin fade with lines"
+    },
+    "uredjivanjeBrade": {
+      "name": "Beard grooming",
+      "desc": "Shaping and trimming to your style. Beard fade.",
+      "alt": "Beard shaping"
+    },
+    "pranjeKose": {
+      "name": "Hair wash",
+      "desc": "Hair wash with professional shampoos.",
+      "alt": "Hair wash at the salon"
+    }
+  },
+  "locations": {
+    "label": "Location",
+    "title": "Our address",
+    "openMaps": "Open in Google Maps"
+  },
+  "gallery": {
+    "label": "Gallery",
+    "title": "Our latest work",
+    "mainAlt": "Portrait of a man with a modern haircut",
+    "toolsAlt": "Barber tools close-up",
+    "shaveAlt": "Client enjoying a shave",
+    "interiorAlt": "Modern Djox Barbershop interior"
+  },
+  "bookingCta": {
+    "title": "Book appointment",
+    "subtitle": "Book online or call us at {phone}. Payment: {payment}.",
+    "name": "Your name",
+    "phone": "Phone number",
+    "service": "Service",
+    "datetime": "Date and time",
+    "submit": "Book now",
+    "bgAlt": "Modern Djox Barbershop interior"
+  },
+  "footer": {
+    "menu": "Menu",
+    "hours": "Opening hours",
+    "newsletter": "Newsletter",
+    "newsletterText": "Sign up for styling tips and exclusive offers.",
+    "emailPlaceholder": "Email address",
+    "subscribe": "Subscribe",
+    "copyright": "© 2026 DJOX BARBERSHOP. All rights reserved.",
+    "privacy": "Privacy policy",
+    "links": {
+      "home": "Home",
+      "services": "Our services",
+      "gallery": "Work gallery",
+      "contact": "Contact info"
+    }
+  },
+  "hours": {
+    "monday": "Monday",
+    "tueFri": "Tuesday – Friday",
+    "satSun": "Saturday – Sunday",
+    "closed": "Closed"
+  },
+  "booking": {
+    "metaTitle": "Booking | Djox Barbershop",
+    "metaDescription": "Choose a service and time slot to book your visit at Djox Barbershop.",
+    "label": "Booking",
+    "title": "Book your appointment",
+    "steps": {
+      "service": "Service",
+      "slot": "Time",
+      "confirm": "Confirm"
+    },
+    "step1Title": "Choose a service",
+    "step1Subtitle": "Pick a treatment, then we'll choose a time.",
+    "loadingServices": "Loading services…",
+    "errorServices": "Failed to load services.",
+    "select": "Select →",
+    "backServices": "← Back to services",
+    "step2Title": "Choose a time",
+    "today": "Today",
+    "pickDay": "Pick a day to see available slots.",
+    "loadingSlots": "Loading slots…",
+    "closedDay": "The shop is closed on that day.",
+    "noSlots": "No available slots for that day. Try another date.",
+    "continue": "Continue",
+    "backSlot": "← Back to time",
+    "step3Title": "Confirm booking",
+    "summary": {
+      "service": "Service",
+      "duration": "Duration",
+      "date": "Date",
+      "time": "Time",
+      "price": "Price"
+    },
+    "note": "Note (optional)",
+    "notePlaceholder": "E.g. fade + beard shaping",
+    "loading": "Loading…",
+    "confirm": "Confirm booking",
+    "confirming": "Booking…",
+    "signInHint": "Just sign in — so we can link the appointment to your account.",
+    "signInConfirm": "Sign in and confirm",
+    "successTitle": "Appointment booked!",
+    "successText": "{service} — {date} at {time}. See you at Djox Barbershop.",
+    "myAppointments": "My appointments",
+    "errors": {
+      "booking": "Booking failed.",
+      "network": "Server communication error."
+    },
+    "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  },
+  "profile": {
+    "metaTitle": "My profile | Djox Barbershop",
+    "greeting": "Welcome{ime}",
+    "greetingSub": "Ready for a fresh look?",
+    "nextAppointment": "Next appointment",
+    "appointment": "Appointment",
+    "countdown": "Countdown",
+    "noAppointments": "No appointments booked",
+    "noAppointmentsSub": "Time for a new cut. Book in just a few clicks.",
+    "book": "Book appointment",
+    "visitCount": "Visit count",
+    "visits": "visits",
+    "firstVisit": "Your first visit is coming up!",
+    "thanksReturn": "Thanks for coming back!",
+    "upcoming": "Upcoming appointments",
+    "noOther": "You have no other appointments booked.",
+    "noneScheduled": "You currently have no appointments.",
+    "bookNew": "Book new appointment",
+    "lastVisit": "Last visit",
+    "noVisitsYet": "No visits yet",
+    "ctaTitle": "Ready for a new look?",
+    "ctaText": "Pick a service and available slot — booking takes less than a minute.",
+    "bookNow": "Book now",
+    "copyright": "© 2026 DJOX BARBERSHOP. All rights reserved."
+  },
+  "cancel": {
+    "button": "Cancel",
+    "confirm": "Confirm",
+    "confirming": "Cancelling…",
+    "back": "Back",
+    "error": "Cancellation failed.",
+    "network": "Server communication error."
+  },
+  "common": {
+    "min": "min",
+    "cashOnly": "Cash only"
+  }
+}

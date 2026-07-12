@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { hasClerkKeys } from "@/lib/clerk-config";
+import { routing } from "@/i18n/routing";
+
+const intlMiddleware = createIntlMiddleware(routing);
 
 const isPublicRoute = createRouteMatcher([
   "/",
-  "/zakazivanje(.*)",
+  "/bs",
+  "/bs/(.*)",
+  "/en",
+  "/en/(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/usluge",
@@ -13,11 +20,17 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 const isAdminRoute = createRouteMatcher([
-  "/admin(.*)",
+  "/bs/admin(.*)",
+  "/en/admin(.*)",
   "/api/admin(.*)",
 ]);
 
 const clerk = clerkMiddleware(async (auth, req) => {
+  const intlResponse = intlMiddleware(req);
+  if (intlResponse.status >= 300 && intlResponse.status < 400) {
+    return intlResponse;
+  }
+
   if (isAdminRoute(req)) {
     const { sessionClaims } = await auth();
     const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role;
@@ -28,10 +41,10 @@ const clerk = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
+  return intlResponse;
 });
 
-// Dok nema pravih Clerk ključeva, middleware samo propušta zahtjeve.
-export default hasClerkKeys() ? clerk : () => NextResponse.next();
+export default hasClerkKeys() ? clerk : intlMiddleware;
 
 export const config = {
   matcher: [

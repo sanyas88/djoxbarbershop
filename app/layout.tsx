@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Anton, Manrope, Syne, Dancing_Script } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { srLatn } from "@/lib/clerk-localization";
@@ -30,20 +29,15 @@ const dancingScript = Dancing_Script({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "DJOX BARBERSHOP | Klesanje samopouzdanja, rez po rez",
-  description:
-    "Zakaži svoj termin u Djox Barbershop salonu. Šišanje, brijanje, oblikovanje brade i farbanje — vrhunsko dotjerivanje po tvojoj mjeri.",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const html = (
+  const body = (
     <html
       lang="sr-Latn"
+      suppressHydrationWarning
       className={`${anton.variable} ${manrope.variable} ${syne.variable} ${dancingScript.variable} h-full`}
     >
       <head>
@@ -58,10 +52,9 @@ export default function RootLayout({
     </html>
   );
 
-  // Clerk se uključuje tek kad su pravi ključevi u .env (do tada app radi bez njega).
   if (hasClerkKeys()) {
-    return <ClerkProvider localization={srLatn}>{html}</ClerkProvider>;
+    return <ClerkProvider localization={srLatn}>{body}</ClerkProvider>;
   }
 
-  return html;
+  return body;
 }
