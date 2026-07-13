@@ -1,9 +1,8 @@
-import { SignUp } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import { withLocale } from "@/lib/locale-path";
 
-export default function SignUpPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#111111]">
-      <SignUp />
-    </div>
-  );
+/** Stara putanja bez locale prefiksa → default jezik. */
+export default function SignUpRedirect() {
+  redirect(withLocale(routing.defaultLocale, "/sign-up"));
 }

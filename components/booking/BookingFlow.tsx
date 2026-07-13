@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { RADNO_VRIJEME } from "@/lib/booking-config";
 import { serviceI18nKey } from "@/lib/service-i18n";
+import { withLocale } from "@/lib/locale-path";
 
 type Usluga = {
   id: string;
@@ -79,11 +80,10 @@ export function BookingFlow() {
   const t = useTranslations("booking");
   const tCommon = useTranslations("common");
   const tNav = useTranslations("nav");
+  const locale = useLocale();
+  const profilUrl = withLocale(locale, "/moj-profil");
   const serviceText = useServiceText();
   const { isLoaded, isSignedIn } = useAuth();
-
-  const DAN_NAZIV = t.raw("days") as string[];
-  const MJESEC_NAZIV = t.raw("months") as string[];
 
   const [korak, setKorak] = useState<1 | 2 | 3 | 4>(1);
 
@@ -98,9 +98,15 @@ export function BookingFlow() {
   const [ucitavanjeSlotova, setUcitavanjeSlotova] = useState(false);
   const [zatvoreno, setZatvoreno] = useState(false);
   const [slot, setSlot] = useState<Slot | null>(null);
+  const slotRef = useRef<Slot | null>(null);
+
+  useEffect(() => {
+    slotRef.current = slot;
+  }, [slot]);
 
   const [napomena, setNapomena] = useState("");
   const [slanje, setSlanje] = useState(false);
+  const [provjeraSlota, setProvjeraSlota] = useState(false);
   const [greska, setGreska] = useState("");
 
   const dani = useMemo(() => {
@@ -112,14 +118,14 @@ export function BookingFlow() {
       ).padStart(2, "0")}`;
       return {
         iso,
-        dan: DAN_NAZIV[d.getDay()],
+        dan: t(`days.${d.getDay()}`),
         broj: d.getDate(),
-        mjesec: MJESEC_NAZIV[d.getMonth()],
+        mjesec: t(`months.${d.getMonth()}`),
         zatvoreno: RADNO_VRIJEME[d.getDay()] === null,
         danas: i === 0,
       };
     });
-  }, [DAN_NAZIV, MJESEC_NAZIV]);
+  }, [t]);
 
   useEffect(() => {
     let aktivno = true;
@@ -140,37 +146,103 @@ export function BookingFlow() {
     };
   }, [t]);
 
-  useEffect(() => {
-    if (!usluga || !datum) return;
-    const controller = new AbortController();
-    const { signal } = controller;
-    (async () => {
-      setUcitavanjeSlotova(true);
-      setSlot(null);
-      setSlotovi([]);
+  const ucitajSlotove = useCallback(
+    async (opts?: { silent?: boolean; signal?: AbortSignal }) => {
+      if (!usluga || !datum) return null;
+
+      if (!opts?.silent) {
+        setUcitavanjeSlotova(true);
+        setSlot(null);
+        setSlotovi([]);
+      }
+
       try {
         const res = await fetch(
           `/api/slotovi?uslugaId=${usluga.id}&datum=${datum}`,
-          { signal },
+          { signal: opts?.signal },
         );
         const data = await res.json();
-        if (signal.aborted) return;
-        setSlotovi(data.slotovi ?? []);
+        if (opts?.signal?.aborted) return null;
+
+        const novi: Slot[] = data.slotovi ?? [];
+        setSlotovi(novi);
         setZatvoreno(Boolean(data.zatvoreno));
-      } catch {
-        if (!signal.aborted) setSlotovi([]);
+
+        const trenutni = slotRef.current;
+        if (trenutni && !novi.some((s) => s.pocetak === trenutni.pocetak)) {
+          setSlot(null);
+          setGreska(t("errors.slotTaken"));
+        }
+
+        return novi;
+      } catch (err) {
+        if (opts?.signal?.aborted || (err instanceof DOMException && err.name === "AbortError")) {
+          return null;
+        }
+        if (!opts?.silent) setSlotovi([]);
+        return null;
       } finally {
-        if (!signal.aborted) setUcitavanjeSlotova(false);
+        if (!opts?.silent && !opts?.signal?.aborted) {
+          setUcitavanjeSlotova(false);
+        }
       }
-    })();
+    },
+    [usluga, datum, t],
+  );
+
+  useEffect(() => {
+    if (!usluga || !datum) return;
+    const controller = new AbortController();
+    setGreska("");
+    ucitajSlotove({ signal: controller.signal });
     return () => controller.abort();
-  }, [usluga, datum]);
+  }, [usluga, datum, ucitajSlotove]);
+
+  // Periodično osvježavanje dok korisnik bira termin (drugi korisnik može zauzeti slot).
+  useEffect(() => {
+    if (korak !== 2 || !usluga || !datum) return;
+    const interval = setInterval(() => {
+      ucitajSlotove({ silent: true });
+    }, 20_000);
+    return () => clearInterval(interval);
+  }, [korak, usluga, datum, ucitajSlotove]);
+
+  // Osvježi kad korisnik vrati fokus na tab.
+  useEffect(() => {
+    if (korak !== 2 || !usluga || !datum) return;
+    function onVisible() {
+      if (document.visibilityState === "visible") {
+        ucitajSlotove({ silent: true });
+      }
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [korak, usluga, datum, ucitajSlotove]);
 
   function izaberiUslugu(u: Usluga) {
     setUsluga(u);
     setDatum("");
     setSlot(null);
+    setGreska("");
     setKorak(2);
+  }
+
+  async function nastaviNaPotvrdu() {
+    if (!slot) return;
+    setProvjeraSlota(true);
+    setGreska("");
+    try {
+      const novi = await ucitajSlotove({ silent: true });
+      const josSlobodan = novi?.some((s) => s.pocetak === slot.pocetak);
+      if (!josSlobodan) {
+        setSlot(null);
+        setGreska(t("errors.slotTaken"));
+        return;
+      }
+      setKorak(3);
+    } finally {
+      setProvjeraSlota(false);
+    }
   }
 
   async function potvrdi() {
@@ -189,10 +261,13 @@ export function BookingFlow() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setGreska(data.greska ?? t("errors.booking"));
         if (res.status === 409) {
+          setGreska(t("errors.slotTaken"));
           setSlot(null);
           setKorak(2);
+          await ucitajSlotove({ silent: true });
+        } else {
+          setGreska(data.greska ?? t("errors.booking"));
         }
         return;
       }
@@ -270,7 +345,12 @@ export function BookingFlow() {
             {serviceText.name(usluga.naziv)} · {usluga.trajanje} {tCommon("min")} · {usluga.cijena} KM
           </p>
 
-          <div className="no-scrollbar -mx-2 mb-8 flex gap-3 overflow-x-auto px-2 pb-2">
+          {greska && <PorukaGreske tekst={greska} />}
+
+          <div
+            className="no-scrollbar -mx-2 mb-8 flex gap-3 overflow-x-auto px-2 pb-2 notranslate"
+            translate="no"
+          >
             {dani.map((d) => {
               const aktivan = d.iso === datum;
               return (
@@ -306,13 +386,19 @@ export function BookingFlow() {
           )}
 
           {datum && !ucitavanjeSlotova && slotovi.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
+            <div
+              className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 notranslate"
+              translate="no"
+            >
               {slotovi.map((s) => {
                 const aktivan = slot?.pocetak === s.pocetak;
                 return (
                   <button
                     key={s.pocetak}
-                    onClick={() => setSlot(s)}
+                    onClick={() => {
+                    setSlot(s);
+                    setGreska("");
+                  }}
                     className={`rounded-lg border py-3 text-sm font-bold transition-all ${
                       aktivan
                         ? "border-blood-red bg-blood-red text-pure-white"
@@ -328,10 +414,11 @@ export function BookingFlow() {
 
           {slot && (
             <button
-              onClick={() => setKorak(3)}
-              className="mt-10 w-full rounded-lg bg-blood-red py-4 font-button-text uppercase tracking-[0.2em] text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95"
+              onClick={nastaviNaPotvrdu}
+              disabled={provjeraSlota}
+              className="mt-10 w-full rounded-lg bg-blood-red py-4 font-button-text uppercase tracking-[0.2em] text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-60"
             >
-              {t("continue")}
+              {provjeraSlota ? t("checkingSlot") : t("continue")}
             </button>
           )}
         </div>
@@ -340,7 +427,10 @@ export function BookingFlow() {
       {korak === 3 && usluga && slot && (
         <div>
           <button
-            onClick={() => setKorak(2)}
+            onClick={() => {
+              setKorak(2);
+              setGreska("");
+            }}
             className="mb-6 text-xs uppercase tracking-widest text-muted-gray hover:text-pure-white"
           >
             {t("backSlot")}
@@ -371,11 +461,7 @@ export function BookingFlow() {
             />
           </div>
 
-          {greska && (
-            <p className="mt-6 rounded-lg border border-blood-red/40 bg-blood-red/10 px-4 py-3 text-sm text-blood-red">
-              {greska}
-            </p>
-          )}
+          {greska && <PorukaGreske tekst={greska} />}
 
           <div className="mt-8">
             {!isLoaded ? (
@@ -391,7 +477,7 @@ export function BookingFlow() {
             ) : (
               <>
                 <p className="mb-4 text-center text-sm text-muted-gray">{t("signInHint")}</p>
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" fallbackRedirectUrl={profilUrl}>
                   <button className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95">
                     {t("signInConfirm")}
                   </button>
@@ -434,6 +520,14 @@ export function BookingFlow() {
         </div>
       )}
     </div>
+  );
+}
+
+function PorukaGreske({ tekst }: { tekst: string }) {
+  return (
+    <p className="mb-6 rounded-lg border border-blood-red/40 bg-blood-red/10 px-4 py-3 text-sm text-blood-red">
+      {tekst}
+    </p>
   );
 }
 

@@ -4,6 +4,10 @@ import { getAdminUser } from "@/lib/auth";
 import { ZAUZETI_STATUSI } from "@/lib/booking-config";
 import { salonWallToUtc, parseDatum } from "@/lib/time";
 import { posaljiBlokaduNaZapier } from "@/lib/zapier";
+import { isPgExclusionViolation } from "@/lib/db-errors";
+
+const GRESKA_PREKLAPANJE =
+  "Taj period se preklapa sa postojećom rezervacijom ili blokadom.";
 
 // POST /api/admin/blokada — admin blokira termin (status BLOKIRANO, bez klijenta i mejla).
 // Zaštita: samo ADMIN; korisnik-vlasnik bloka je sam admin.
@@ -66,23 +70,28 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
   if (preklapanje) {
-    return NextResponse.json(
-      { greska: "Taj period se preklapa sa postojećom rezervacijom ili blokadom." },
-      { status: 409 },
-    );
+    return NextResponse.json({ greska: GRESKA_PREKLAPANJE }, { status: 409 });
   }
 
-  const blokada = await prisma.rezervacija.create({
-    data: {
-      userId: admin.id,
-      uslugaId: null,
-      pocetak,
-      kraj,
-      status: "BLOKIRANO",
-      napomena: napomena?.slice(0, 500) || "Blokirano",
-    },
-    select: { id: true, pocetak: true, kraj: true, status: true },
-  });
+  let blokada;
+  try {
+    blokada = await prisma.rezervacija.create({
+      data: {
+        userId: admin.id,
+        uslugaId: null,
+        pocetak,
+        kraj,
+        status: "BLOKIRANO",
+        napomena: napomena?.slice(0, 500) || "Blokirano",
+      },
+      select: { id: true, pocetak: true, kraj: true, status: true },
+    });
+  } catch (error) {
+    if (isPgExclusionViolation(error)) {
+      return NextResponse.json({ greska: GRESKA_PREKLAPANJE }, { status: 409 });
+    }
+    throw error;
+  }
 
   // Zapier (Okidač 2): Google Calendar event "🚫 Zauzeto" — BEZ mejla (zaseban Zap).
   after(() =>

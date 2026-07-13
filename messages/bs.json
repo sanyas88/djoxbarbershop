@@ -102,10 +102,9 @@
   "footer": {
     "menu": "Meni",
     "hours": "Radno vrijeme",
-    "newsletter": "Newsletter",
-    "newsletterText": "Prijavite se za savjete o stilizovanju i ekskluzivne ponude.",
-    "emailPlaceholder": "Email adresa",
-    "subscribe": "Prijavi se",
+    "contactTitle": "Kontakt",
+    "contactText": "Zakaži termin online ili nas pozovi direktno.",
+    "bookCta": "Rezerviši termin",
     "copyright": "© 2026 DJOX BARBERSHOP. Sva prava zadržana.",
     "privacy": "Pravila privatnosti",
     "links": {
@@ -165,10 +164,33 @@
     "myAppointments": "Moji termini",
     "errors": {
       "booking": "Greška pri zakazivanju.",
-      "network": "Greška u komunikaciji sa serverom."
+      "network": "Greška u komunikaciji sa serverom.",
+      "slotTaken": "Taj termin je upravo zauzet. Izaberi drugi."
     },
-    "days": ["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
-    "months": ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "avg", "sep", "okt", "nov", "dec"]
+    "checkingSlot": "Provjeravam termin…",
+    "days": {
+      "0": "Ned",
+      "1": "Pon",
+      "2": "Uto",
+      "3": "Sri",
+      "4": "Čet",
+      "5": "Pet",
+      "6": "Sub"
+    },
+    "months": {
+      "0": "jan",
+      "1": "feb",
+      "2": "mar",
+      "3": "apr",
+      "4": "maj",
+      "5": "jun",
+      "6": "jul",
+      "7": "avg",
+      "8": "sep",
+      "9": "okt",
+      "10": "nov",
+      "11": "dec"
+    }
   },
   "profile": {
     "metaTitle": "Moj profil | Djox Barbershop",
@@ -206,5 +228,20 @@
   "common": {
     "min": "min",
     "cashOnly": "Samo gotovina"
+  },
+  "privacyPage": {
+    "metaTitle": "Pravila privatnosti | Djox Barbershop",
+    "title": "Pravila privatnosti",
+    "updated": "Posljednje ažuriranje: april 2026.",
+    "collectTitle": "Koje podatke prikupljamo",
+    "collectText": "Pri zakazivanju termina prikupljamo ime, email i podatke o rezervaciji (usluga, datum i vrijeme). Prijava se vrši putem Clerk servisa za autentifikaciju.",
+    "useTitle": "Kako koristimo podatke",
+    "useText": "Podatke koristimo isključivo za upravljanje terminima, komunikaciju o rezervaciji i sinhronizaciju s kalendarom salona. Ne prodajemo vaše podatke trećim stranama.",
+    "storageTitle": "Čuvanje i sigurnost",
+    "storageText": "Podaci o rezervacijama čuvaju se u zaštićenoj bazi podataka (Neon PostgreSQL). Pristup admin panelu imaju samo ovlašteni korisnici salona.",
+    "rightsTitle": "Vaša prava",
+    "rightsText": "Možete pregledati i otkazati svoje termine u sekciji Moj profil. Za brisanje naloga ili pitanja o podacima kontaktirajte nas telefonom ili putem Instagrama.",
+    "contactTitle": "Kontakt",
+    "contactText": "Djox Barbershop, Ulica 9. Januara 10, Vlasenica. Telefon: +387 65 788 851."
   }
 }

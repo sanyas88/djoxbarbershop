@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Djox Barbershop
 
-## Getting Started
+Web aplikacija za online zakazivanje termina u **Djox Barbershop** salonu (Vlasenica, BiH).
 
-First, run the development server:
+## Funkcionalnosti
+
+- Dvojezična landing stranica (bosanski / engleski)
+- Online zakazivanje (usluga → termin → potvrda)
+- Zaštita od duplog bukiranja (baza + poruke korisniku)
+- Korisnički profil s pregledom i otkazivanjem termina
+- Admin panel (statistika, blokiranje termina)
+- Zapier integracija (Google Calendar + email potvrda)
+
+## Tech stack
+
+- **Next.js 16** (App Router)
+- **Prisma 6** + **Neon PostgreSQL**
+- **Clerk** (autentifikacija)
+- **next-intl** (i18n)
+- **Tailwind CSS 4**
+- **Zapier** webhooks
+
+## Lokalni razvoj
+
+### 1. Zavisnosti
+
+```bash
+npm install
+```
+
+### 2. Env varijable
+
+Kopiraj `.env.example` u `.env` i popuni vrijednosti:
+
+```bash
+cp .env.example .env
+```
+
+### 3. Baza
+
+```bash
+npx prisma migrate deploy
+npx prisma db seed
+```
+
+### 4. Dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplikacija: [http://localhost:3000](http://localhost:3000) → preusmjerava na `/bs`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Ključne rute
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Ruta | Opis |
+|------|------|
+| `/bs`, `/en` | Landing |
+| `/bs/zakazivanje` | Zakazivanje |
+| `/bs/moj-profil` | Korisnički profil |
+| `/bs/admin` | Admin panel |
+| `/bs/sign-in` | Prijava (Clerk) |
+| `/bs/privatnost` | Pravila privatnosti |
 
-## Learn More
+## Admin pristup
 
-To learn more about Next.js, take a look at the following resources:
+U Clerk dashboardu postavi **Public metadata** na admin nalogu:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```json
+{ "role": "admin" }
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy (Vercel)
 
-## Deploy on Vercel
+1. Push na GitHub
+2. Poveži repo na Vercel
+3. Postavi env varijable iz `.env.example`
+4. Pokreni `npx prisma migrate deploy` na produkcijskoj bazi
+5. Testiraj jednu rezervaciju (Zapier webhook)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Skripte
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Komanda | Opis |
+|---------|------|
+| `npm run dev` | Dev server |
+| `npm run build` | Production build |
+| `npm run start` | Production server |
+| `npm run lint` | ESLint |

@@ -1,10 +1,11 @@
 import { Link } from "@/i18n/navigation";
-import { redirect } from "next/navigation";
+import { redirect as nextRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { UserButton } from "@clerk/nextjs";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/auth";
+import { withLocale } from "@/lib/locale-path";
 import { BlokadaForma } from "@/components/admin/BlokadaForma";
 import { AdminAkcijaDugme } from "@/components/admin/AdminAkcijaDugme";
 import {
@@ -54,8 +55,8 @@ export default async function AdminPage({
   setRequestLocale(locale);
 
   const user = await getOrCreateUser();
-  if (!user) redirect("/sign-in");
-  if (user.uloga !== "ADMIN") redirect("/");
+  if (!user) nextRedirect(withLocale(locale, "/sign-in"));
+  if (user.uloga !== "ADMIN") nextRedirect(withLocale(locale, "/"));
 
   const sada = new Date();
   const lp = salonLocalParts(sada);

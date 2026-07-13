@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { UserButton } from "@clerk/nextjs";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateUser } from "@/lib/auth";
+import { withLocale } from "@/lib/locale-path";
 import { OtkaziDugme } from "@/components/profil/OtkaziDugme";
 import { serviceI18nKey } from "@/lib/service-i18n";
 import {
@@ -39,7 +40,7 @@ export default async function MojProfilPage({
   const tServices = await getTranslations("services");
 
   const user = await getOrCreateUser();
-  if (!user) nextRedirect("/sign-in");
+  if (!user) nextRedirect(withLocale(locale, "/sign-in"));
 
   function serviceName(naziv?: string | null) {
     if (!naziv) return t("appointment");

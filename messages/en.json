@@ -102,10 +102,9 @@
   "footer": {
     "menu": "Menu",
     "hours": "Opening hours",
-    "newsletter": "Newsletter",
-    "newsletterText": "Sign up for styling tips and exclusive offers.",
-    "emailPlaceholder": "Email address",
-    "subscribe": "Subscribe",
+    "contactTitle": "Contact",
+    "contactText": "Book online or call us directly.",
+    "bookCta": "Book now",
     "copyright": "© 2026 DJOX BARBERSHOP. All rights reserved.",
     "privacy": "Privacy policy",
     "links": {
@@ -165,10 +164,33 @@
     "myAppointments": "My appointments",
     "errors": {
       "booking": "Booking failed.",
-      "network": "Server communication error."
+      "network": "Server communication error.",
+      "slotTaken": "That time was just booked. Please choose another."
     },
-    "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    "checkingSlot": "Checking availability…",
+    "days": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "months": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    }
   },
   "profile": {
     "metaTitle": "My profile | Djox Barbershop",
@@ -206,5 +228,20 @@
   "common": {
     "min": "min",
     "cashOnly": "Cash only"
+  },
+  "privacyPage": {
+    "metaTitle": "Privacy policy | Djox Barbershop",
+    "title": "Privacy policy",
+    "updated": "Last updated: April 2026.",
+    "collectTitle": "What data we collect",
+    "collectText": "When you book an appointment we collect your name, email, and booking details (service, date, and time). Sign-in is handled by Clerk authentication.",
+    "useTitle": "How we use your data",
+    "useText": "We use your data solely to manage appointments, send booking confirmations, and sync with the shop calendar. We do not sell your data to third parties.",
+    "storageTitle": "Storage and security",
+    "storageText": "Booking data is stored in a secured database (Neon PostgreSQL). Only authorized shop staff can access the admin panel.",
+    "rightsTitle": "Your rights",
+    "rightsText": "You can view and cancel your appointments in My profile. To delete your account or ask about your data, contact us by phone or Instagram.",
+    "contactTitle": "Contact",
+    "contactText": "Djox Barbershop, Ulica 9. Januara 10, Vlasenica. Phone: +387 65 788 851."
   }
 }

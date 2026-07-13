@@ -4,6 +4,9 @@ import { getOrCreateUser } from "@/lib/auth";
 import { RADNO_VRIJEME, MIN_NAJAVA_MIN, MAX_DANA_UNAPRIJED } from "@/lib/booking-config";
 import { salonLocalParts, danUSedmici } from "@/lib/time";
 import { posaljiRezervacijuNaZapier } from "@/lib/zapier";
+import { isPgExclusionViolation } from "@/lib/db-errors";
+
+const GRESKA_TERMIN_ZAUZET = "Taj termin je upravo zauzet. Izaberite drugi.";
 
 // POST /api/rezervacije — klijent potvrđuje rezervaciju.
 // Zaštita: traži prijavljenog korisnika (Clerk); termin se upisuje na NJEGOV nalog.
@@ -93,24 +96,29 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
   if (preklapanje) {
-    return NextResponse.json(
-      { greska: "Taj termin je upravo zauzet. Izaberite drugi." },
-      { status: 409 },
-    );
+    return NextResponse.json({ greska: GRESKA_TERMIN_ZAUZET }, { status: 409 });
   }
 
-  // 7) Upis rezervacije — status POTVRDJENO (klijentska rezervacija).
-  const rezervacija = await prisma.rezervacija.create({
-    data: {
-      userId: user.id,
-      uslugaId: usluga.id,
-      pocetak: pocetakDate,
-      kraj: krajDate,
-      status: "POTVRDJENO",
-      napomena: napomena?.slice(0, 500) || null,
-    },
-    select: { id: true, pocetak: true, kraj: true, status: true },
-  });
+  // 7) Upis rezervacije — DB exclusion constraint je konačna zaštita od race condition.
+  let rezervacija;
+  try {
+    rezervacija = await prisma.rezervacija.create({
+      data: {
+        userId: user.id,
+        uslugaId: usluga.id,
+        pocetak: pocetakDate,
+        kraj: krajDate,
+        status: "POTVRDJENO",
+        napomena: napomena?.slice(0, 500) || null,
+      },
+      select: { id: true, pocetak: true, kraj: true, status: true },
+    });
+  } catch (error) {
+    if (isPgExclusionViolation(error)) {
+      return NextResponse.json({ greska: GRESKA_TERMIN_ZAUZET }, { status: 409 });
+    }
+    throw error;
+  }
 
   // Zapier (Okidač 1): Google Calendar event + potvrdni mejl klijentu.
   // after() — šalje se nakon odgovora, pa korisnik dobija instant potvrdu.

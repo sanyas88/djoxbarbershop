@@ -1,10 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, type ClerkMiddlewareAuth } from "@clerk/nextjs/server";
 import { hasClerkKeys } from "@/lib/clerk-config";
 import { routing } from "@/i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
+
+const isApiRoute = createRouteMatcher(["/api/(.*)"]);
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -25,26 +27,50 @@ const isAdminRoute = createRouteMatcher([
   "/api/admin(.*)",
 ]);
 
-const clerk = clerkMiddleware(async (auth, req) => {
+async function handleRequest(req: NextRequest, auth?: ClerkMiddlewareAuth) {
+  // API rute nemaju locale prefiks — inače /api/usluge postane /bs/api/usluge (404).
+  if (isApiRoute(req)) {
+    if (auth) {
+      if (isAdminRoute(req)) {
+        const { sessionClaims } = await auth();
+        const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role;
+        if (role !== "admin") {
+          await auth.protect();
+        }
+      }
+      if (!isPublicRoute(req)) {
+        await auth.protect();
+      }
+    }
+    return NextResponse.next();
+  }
+
   const intlResponse = intlMiddleware(req);
   if (intlResponse.status >= 300 && intlResponse.status < 400) {
     return intlResponse;
   }
 
-  if (isAdminRoute(req)) {
-    const { sessionClaims } = await auth();
-    const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role;
-    if (role !== "admin") {
+  if (auth) {
+    if (isAdminRoute(req)) {
+      const { sessionClaims } = await auth();
+      const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role;
+      if (role !== "admin") {
+        await auth.protect();
+      }
+    }
+    if (!isPublicRoute(req)) {
       await auth.protect();
     }
   }
-  if (!isPublicRoute(req)) {
-    await auth.protect();
-  }
-  return intlResponse;
-});
 
-export default hasClerkKeys() ? clerk : intlMiddleware;
+  return intlResponse;
+}
+
+const clerk = clerkMiddleware(async (auth, req) => handleRequest(req, auth));
+
+export default hasClerkKeys()
+  ? clerk
+  : (req: NextRequest) => handleRequest(req);
 
 export const config = {
   matcher: [

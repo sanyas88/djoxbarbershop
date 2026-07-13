@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { salonInfo } from "@/lib/landing-images";
 
 export async function Footer() {
@@ -76,27 +77,26 @@ export async function Footer() {
         </div>
         <div>
           <h4 className="font-accent-label text-pure-white uppercase text-sm tracking-widest mb-8 border-b border-blood-red/30 pb-2 inline-block">
-            {t("newsletter")}
+            {t("contactTitle")}
           </h4>
-          <p className="text-muted-gray text-sm mb-6">{t("newsletterText")}</p>
-          <div className="relative">
-            <input
-              className="w-full bg-surface-container-high border border-border-subtle rounded-lg py-3 px-4 text-sm focus:ring-blood-red focus:border-blood-red outline-none"
-              placeholder={t("emailPlaceholder")}
-              type="email"
-            />
-            <button className="absolute right-2 top-1.5 bg-blood-red text-pure-white px-3 py-1.5 rounded-md text-xs font-bold uppercase hover:brightness-110">
-              {t("subscribe")}
-            </button>
-          </div>
+          <p className="text-muted-gray text-sm mb-6">{t("contactText")}</p>
+          <Link
+            href="/zakazivanje"
+            className="inline-block rounded-lg bg-blood-red px-5 py-3 text-xs font-bold uppercase tracking-widest text-pure-white transition-all hover:brightness-110"
+          >
+            {t("bookCta")}
+          </Link>
         </div>
       </div>
       <div className="border-t border-border-subtle pt-10 text-center max-w-[1280px] mx-auto px-gutter">
         <p className="text-muted-gray text-xs uppercase tracking-widest">
           {t("copyright")} |{" "}
-          <a className="hover:text-pure-white underline decoration-blood-red underline-offset-4" href="#">
+          <Link
+            href="/privatnost"
+            className="hover:text-pure-white underline decoration-blood-red underline-offset-4"
+          >
             {t("privacy")}
-          </a>
+          </Link>
         </p>
       </div>
     </footer>

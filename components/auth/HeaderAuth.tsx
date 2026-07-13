@@ -1,11 +1,14 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuth, useUser, UserButton, SignInButton } from "@clerk/nextjs";
+import { withLocale } from "@/lib/locale-path";
 
 export function HeaderAuth() {
   const t = useTranslations("nav");
+  const locale = useLocale();
+  const profilUrl = withLocale(locale, "/moj-profil");
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
 
@@ -13,7 +16,7 @@ export function HeaderAuth() {
 
   if (!isSignedIn) {
     return (
-      <SignInButton mode="modal" fallbackRedirectUrl="/moj-profil">
+      <SignInButton mode="modal" fallbackRedirectUrl={profilUrl}>
         <button className="font-medium text-muted-gray transition-colors duration-300 hover:text-blood-red">
           {t("login")}
         </button>
