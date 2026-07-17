@@ -15,11 +15,11 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center rounded-lg border border-border-subtle bg-surface-container-high p-0.5 text-xs font-bold uppercase tracking-widest">
+    <div className="flex items-center rounded-lg border border-border-subtle bg-surface-container-high p-0.5 text-[11px] font-bold uppercase tracking-widest sm:text-xs">
       <button
         type="button"
         onClick={() => switchTo("bs")}
-        className={`rounded-md px-2.5 py-1.5 transition-colors ${
+        className={`rounded-md px-2 py-1.5 transition-colors sm:px-2.5 ${
           locale === "bs" ? "bg-blood-red text-pure-white" : "text-muted-gray hover:text-pure-white"
         }`}
         aria-pressed={locale === "bs"}
@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => switchTo("en")}
-        className={`rounded-md px-2.5 py-1.5 transition-colors ${
+        className={`rounded-md px-2 py-1.5 transition-colors sm:px-2.5 ${
           locale === "en" ? "bg-blood-red text-pure-white" : "text-muted-gray hover:text-pure-white"
         }`}
         aria-pressed={locale === "en"}

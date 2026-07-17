@@ -24,7 +24,7 @@ export default async function Home({
     <>
       <BookingDraftRedirect />
       <Header />
-      <main className="pt-20">
+      <main className="pt-16 md:pt-20">
         <Hero />
         <BrandBar />
         <About />
