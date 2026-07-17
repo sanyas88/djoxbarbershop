@@ -1,7 +1,7 @@
 import { Anton, Manrope, Syne, Dancing_Script } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { srLatn } from "@/lib/clerk-localization";
-import { hasClerkKeys } from "@/lib/clerk-config";
+import { clerkPublishableKey } from "@/lib/clerk-config";
 import "./globals.css";
 
 const anton = Anton({
@@ -52,8 +52,14 @@ export default function RootLayout({
     </html>
   );
 
-  if (hasClerkKeys()) {
-    return <ClerkProvider localization={srLatn}>{body}</ClerkProvider>;
+  const clerkPk = clerkPublishableKey();
+
+  if (clerkPk) {
+    return (
+      <ClerkProvider publishableKey={clerkPk} localization={srLatn}>
+        {body}
+      </ClerkProvider>
+    );
   }
 
   return body;

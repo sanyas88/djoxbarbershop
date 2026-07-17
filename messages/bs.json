@@ -92,10 +92,6 @@
   "bookingCta": {
     "title": "Zakaži termin",
     "subtitle": "Rezerviši termin online ili nas pozovi na {phone}. Plaćanje: {payment}.",
-    "name": "Vaše ime",
-    "phone": "Broj telefona",
-    "service": "Vrsta usluge",
-    "datetime": "Datum i vrijeme",
     "submit": "Rezerviši odmah",
     "bgAlt": "Moderni enterijer Djox Barbershop salona"
   },
@@ -165,7 +161,7 @@
     "errors": {
       "booking": "Greška pri zakazivanju.",
       "network": "Greška u komunikaciji sa serverom.",
-      "slotTaken": "Taj termin je upravo zauzet. Izaberi drugi."
+      "slotTaken": "Ovaj termin je već rezervisan. Izaberi drugi slobodan termin."
     },
     "checkingSlot": "Provjeravam termin…",
     "days": {
@@ -199,6 +195,10 @@
     "nextAppointment": "Sledeći termin",
     "appointment": "Termin",
     "countdown": "Odbrojavanje",
+    "countdownPast": "Prošlo",
+    "countdownToday": "Danas",
+    "countdownTomorrow": "Sutra",
+    "countdownInDays": "za {count} dana",
     "noAppointments": "Nemaš zakazanih termina",
     "noAppointmentsSub": "Vrijeme je za novi rez. Zakaži svoj termin u par klikova.",
     "book": "Zakaži termin",

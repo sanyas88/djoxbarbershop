@@ -2,11 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { RADNO_VRIJEME } from "@/lib/booking-config";
 import { serviceI18nKey } from "@/lib/service-i18n";
 import { withLocale } from "@/lib/locale-path";
+import { isClerkEnabledClient } from "@/lib/clerk-config-client";
+import {
+  saveBookingDraft,
+  loadBookingDraft,
+  clearBookingDraft,
+} from "@/lib/booking-draft";
 
 type Usluga = {
   id: string;
@@ -79,11 +85,12 @@ function useServiceText() {
 export function BookingFlow() {
   const t = useTranslations("booking");
   const tCommon = useTranslations("common");
-  const tNav = useTranslations("nav");
   const locale = useLocale();
-  const profilUrl = withLocale(locale, "/moj-profil");
+  const zakazivanjeUrl = withLocale(locale, "/zakazivanje");
+  const signInUrl = `${withLocale(locale, "/sign-in")}?redirect_url=${encodeURIComponent(zakazivanjeUrl)}`;
   const serviceText = useServiceText();
-  const { isLoaded, isSignedIn } = useAuth();
+  const clerkEnabled = isClerkEnabledClient();
+  const router = useRouter();
 
   const [korak, setKorak] = useState<1 | 2 | 3 | 4>(1);
 
@@ -99,6 +106,8 @@ export function BookingFlow() {
   const [zatvoreno, setZatvoreno] = useState(false);
   const [slot, setSlot] = useState<Slot | null>(null);
   const slotRef = useRef<Slot | null>(null);
+  const [cekamPrijavu, setCekamPrijavu] = useState(false);
+  const draftRestored = useRef(false);
 
   useEffect(() => {
     slotRef.current = slot;
@@ -146,13 +155,43 @@ export function BookingFlow() {
     };
   }, [t]);
 
+  // Vrati uslugu/termin nakon logina (sessionStorage draft).
+  useEffect(() => {
+    if (ucitavanjeUsluga || draftRestored.current || usluge.length === 0) return;
+    draftRestored.current = true;
+    const draft = loadBookingDraft();
+    if (!draft) return;
+    const u = usluge.find((x) => x.id === draft.uslugaId);
+    if (!u) {
+      clearBookingDraft();
+      return;
+    }
+    setUsluga(u);
+    setDatum(draft.datum);
+    setSlot(draft.slot);
+    setNapomena(draft.napomena ?? "");
+    setKorak(3);
+    if (draft.pendingConfirm) setCekamPrijavu(true);
+  }, [ucitavanjeUsluga, usluge]);
+
+  function sacuvajDraftZaLogin() {
+    if (!usluga || !slot || !datum) return;
+    saveBookingDraft({
+      uslugaId: usluga.id,
+      datum,
+      slot,
+      napomena,
+      pendingConfirm: true,
+    });
+    setCekamPrijavu(true);
+  }
+
   const ucitajSlotove = useCallback(
     async (opts?: { silent?: boolean; signal?: AbortSignal }) => {
       if (!usluga || !datum) return null;
 
       if (!opts?.silent) {
         setUcitavanjeSlotova(true);
-        setSlot(null);
         setSlotovi([]);
       }
 
@@ -171,7 +210,7 @@ export function BookingFlow() {
         const trenutni = slotRef.current;
         if (trenutni && !novi.some((s) => s.pocetak === trenutni.pocetak)) {
           setSlot(null);
-          setGreska(t("errors.slotTaken"));
+          if (!opts?.silent) setGreska(t("errors.slotTaken"));
         }
 
         return novi;
@@ -191,12 +230,13 @@ export function BookingFlow() {
   );
 
   useEffect(() => {
-    if (!usluga || !datum) return;
+    // Poslije koraka 2 ne osvježavaj slotove — zauzeti termin bi obrisao izbor / success UI.
+    if (!usluga || !datum || korak >= 3) return;
     const controller = new AbortController();
-    setGreska("");
+    // Ne briši greska ovdje — poruka „termin zauzet“ mora ostati vidljiva.
     ucitajSlotove({ signal: controller.signal });
     return () => controller.abort();
-  }, [usluga, datum, ucitajSlotove]);
+  }, [usluga, datum, ucitajSlotove, korak]);
 
   // Periodično osvježavanje dok korisnik bira termin (drugi korisnik može zauzeti slot).
   useEffect(() => {
@@ -218,6 +258,19 @@ export function BookingFlow() {
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [korak, usluga, datum, ucitajSlotove]);
+
+  // Čuvaj draft dok si na potvrdi — da preživi OAuth.
+  useEffect(() => {
+    if (korak !== 3 || !usluga || !slot || !datum) return;
+    const prev = loadBookingDraft();
+    saveBookingDraft({
+      uslugaId: usluga.id,
+      datum,
+      slot,
+      napomena,
+      pendingConfirm: prev?.pendingConfirm ?? false,
+    });
+  }, [korak, usluga, slot, datum, napomena]);
 
   function izaberiUslugu(u: Usluga) {
     setUsluga(u);
@@ -262,16 +315,22 @@ export function BookingFlow() {
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 409) {
-          setGreska(t("errors.slotTaken"));
+          clearBookingDraft();
+          setCekamPrijavu(false);
           setSlot(null);
           setKorak(2);
           await ucitajSlotove({ silent: true });
+          setGreska(t("errors.slotTaken"));
         } else {
           setGreska(data.greska ?? t("errors.booking"));
         }
         return;
       }
+      clearBookingDraft();
+      setCekamPrijavu(false);
       setKorak(4);
+      // Odmah na profil — prazan success ekran zbog race-a sa slotovima.
+      router.replace("/moj-profil");
     } catch {
       setGreska(t("errors.network"));
     } finally {
@@ -357,7 +416,11 @@ export function BookingFlow() {
                 <button
                   key={d.iso}
                   disabled={d.zatvoreno}
-                  onClick={() => setDatum(d.iso)}
+                  onClick={() => {
+                    setDatum(d.iso);
+                    setSlot(null);
+                    setGreska("");
+                  }}
                   className={`flex min-w-[68px] flex-col items-center rounded-xl border px-3 py-3 transition-all ${
                     aktivan
                       ? "border-blood-red bg-blood-red text-pure-white"
@@ -464,31 +527,33 @@ export function BookingFlow() {
           {greska && <PorukaGreske tekst={greska} />}
 
           <div className="mt-8">
-            {!isLoaded ? (
-              <p className="text-muted-gray text-sm">{t("loading")}</p>
-            ) : isSignedIn ? (
-              <button
-                onClick={potvrdi}
-                disabled={slanje}
-                className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-60"
-              >
-                {slanje ? t("confirming") : t("confirm")}
-              </button>
+            {clerkEnabled ? (
+              <PotvrdaAuthClerk
+                zakazivanjeUrl={zakazivanjeUrl}
+                onConfirm={potvrdi}
+                onBeforeSignIn={sacuvajDraftZaLogin}
+                cekamPrijavu={cekamPrijavu}
+                onCekamPrijavuDone={() => setCekamPrijavu(false)}
+                slanje={slanje}
+                spreman={Boolean(usluga && slot)}
+              />
             ) : (
               <>
                 <p className="mb-4 text-center text-sm text-muted-gray">{t("signInHint")}</p>
-                <SignInButton mode="modal" fallbackRedirectUrl={profilUrl}>
-                  <button className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95">
-                    {t("signInConfirm")}
-                  </button>
-                </SignInButton>
+                <Link
+                  href={signInUrl}
+                  onClick={sacuvajDraftZaLogin}
+                  className="block w-full rounded-lg bg-blood-red py-5 text-center font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95"
+                >
+                  {t("signInConfirm")}
+                </Link>
               </>
             )}
           </div>
         </div>
       )}
 
-      {korak === 4 && usluga && slot && (
+      {korak === 4 && (
         <div className="text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blood-red">
             <span className="material-symbols-outlined text-3xl text-pure-white">check</span>
@@ -496,38 +561,111 @@ export function BookingFlow() {
           <h2 className="font-headline-lg text-4xl uppercase text-pure-white">
             {t("successTitle")}
           </h2>
-          <p className="mt-4 text-muted-gray">
-            {t("successText", {
-              service: serviceText.name(usluga.naziv),
-              date: datumLabel,
-              time: slot.vrijeme,
-            })}
-          </p>
-          <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              href="/moj-profil"
-              className="rounded-lg bg-blood-red px-8 py-4 font-button-text uppercase tracking-widest text-sm text-pure-white transition-all hover:scale-[1.02]"
-            >
-              {t("myAppointments")}
-            </Link>
-            <Link
-              href="/"
-              className="rounded-lg border border-border-subtle px-8 py-4 font-button-text uppercase tracking-widest text-sm text-on-background transition-all hover:border-blood-red/60"
-            >
-              {tNav("home")}
-            </Link>
-          </div>
+          {usluga && slot && (
+            <p className="mt-4 text-muted-gray">
+              {t("successText", {
+                service: serviceText.name(usluga.naziv),
+                date: datumLabel,
+                time: slot.vrijeme,
+              })}
+            </p>
+          )}
+          <p className="mt-6 text-sm text-muted-gray">{t("loading")}</p>
         </div>
       )}
     </div>
   );
 }
 
+function PotvrdaAuthClerk({
+  zakazivanjeUrl,
+  onConfirm,
+  onBeforeSignIn,
+  cekamPrijavu,
+  onCekamPrijavuDone,
+  slanje,
+  spreman,
+}: {
+  zakazivanjeUrl: string;
+  onConfirm: () => void;
+  onBeforeSignIn: () => void;
+  cekamPrijavu: boolean;
+  onCekamPrijavuDone: () => void;
+  slanje: boolean;
+  spreman: boolean;
+}) {
+  const t = useTranslations("booking");
+  const { isLoaded, isSignedIn } = useAuth();
+  const autoPotvrda = useRef(false);
+  const onConfirmRef = useRef(onConfirm);
+  onConfirmRef.current = onConfirm;
+
+  // Poslije uspješne prijave — potvrdi tek kad su usluga i slot vraćeni.
+  useEffect(() => {
+    if (
+      !cekamPrijavu ||
+      !spreman ||
+      !isLoaded ||
+      !isSignedIn ||
+      slanje ||
+      autoPotvrda.current
+    ) {
+      return;
+    }
+    autoPotvrda.current = true;
+    onCekamPrijavuDone();
+    onConfirmRef.current();
+  }, [cekamPrijavu, spreman, isLoaded, isSignedIn, slanje, onCekamPrijavuDone]);
+
+  if (!isLoaded) {
+    return <p className="text-muted-gray text-sm">{t("loading")}</p>;
+  }
+
+  if (isSignedIn) {
+    return (
+      <button
+        onClick={onConfirm}
+        disabled={slanje || (cekamPrijavu && spreman)}
+        className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-60"
+      >
+        {slanje || (cekamPrijavu && spreman) ? t("confirming") : t("confirm")}
+      </button>
+    );
+  }
+
+  return (
+    <>
+      <p className="mb-4 text-center text-sm text-muted-gray">{t("signInHint")}</p>
+      <SignInButton
+        mode="modal"
+        forceRedirectUrl={zakazivanjeUrl}
+        fallbackRedirectUrl={zakazivanjeUrl}
+        signUpForceRedirectUrl={zakazivanjeUrl}
+        signUpFallbackRedirectUrl={zakazivanjeUrl}
+      >
+        <button
+          type="button"
+          onClick={onBeforeSignIn}
+          className="w-full rounded-lg bg-blood-red py-5 font-button-text uppercase tracking-[0.2em] text-lg text-pure-white shadow-xl shadow-blood-red/30 transition-all hover:scale-[1.01] active:scale-95"
+        >
+          {t("signInConfirm")}
+        </button>
+      </SignInButton>
+    </>
+  );
+}
+
 function PorukaGreske({ tekst }: { tekst: string }) {
   return (
-    <p className="mb-6 rounded-lg border border-blood-red/40 bg-blood-red/10 px-4 py-3 text-sm text-blood-red">
-      {tekst}
-    </p>
+    <div
+      role="alert"
+      className="mb-6 flex items-start gap-3 rounded-xl border border-blood-red/50 bg-blood-red/15 px-4 py-4 text-sm text-pure-white"
+    >
+      <span className="material-symbols-outlined shrink-0 text-blood-red" aria-hidden>
+        event_busy
+      </span>
+      <p className="leading-relaxed text-blood-red">{tekst}</p>
+    </div>
   );
 }
 

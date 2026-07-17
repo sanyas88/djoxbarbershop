@@ -92,10 +92,6 @@
   "bookingCta": {
     "title": "Book appointment",
     "subtitle": "Book online or call us at {phone}. Payment: {payment}.",
-    "name": "Your name",
-    "phone": "Phone number",
-    "service": "Service",
-    "datetime": "Date and time",
     "submit": "Book now",
     "bgAlt": "Modern Djox Barbershop interior"
   },
@@ -165,7 +161,7 @@
     "errors": {
       "booking": "Booking failed.",
       "network": "Server communication error.",
-      "slotTaken": "That time was just booked. Please choose another."
+      "slotTaken": "This time slot is already booked. Please choose another available time."
     },
     "checkingSlot": "Checking availability…",
     "days": {
@@ -199,6 +195,10 @@
     "nextAppointment": "Next appointment",
     "appointment": "Appointment",
     "countdown": "Countdown",
+    "countdownPast": "Past",
+    "countdownToday": "Today",
+    "countdownTomorrow": "Tomorrow",
+    "countdownInDays": "in {count} days",
     "noAppointments": "No appointments booked",
     "noAppointmentsSub": "Time for a new cut. Book in just a few clicks.",
     "book": "Book appointment",

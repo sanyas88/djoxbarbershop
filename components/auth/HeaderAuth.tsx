@@ -4,8 +4,23 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuth, useUser, UserButton, SignInButton } from "@clerk/nextjs";
 import { withLocale } from "@/lib/locale-path";
+import { isClerkEnabledClient } from "@/lib/clerk-config-client";
 
-export function HeaderAuth() {
+function HeaderAuthPlain() {
+  const t = useTranslations("nav");
+  const locale = useLocale();
+
+  return (
+    <Link
+      href={withLocale(locale, "/sign-in")}
+      className="font-medium text-muted-gray transition-colors duration-300 hover:text-blood-red"
+    >
+      {t("login")}
+    </Link>
+  );
+}
+
+function HeaderAuthWithClerk() {
   const t = useTranslations("nav");
   const locale = useLocale();
   const profilUrl = withLocale(locale, "/moj-profil");
@@ -46,4 +61,11 @@ export function HeaderAuth() {
       <UserButton />
     </>
   );
+}
+
+export function HeaderAuth() {
+  if (!isClerkEnabledClient()) {
+    return <HeaderAuthPlain />;
+  }
+  return <HeaderAuthWithClerk />;
 }

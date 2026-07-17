@@ -101,59 +101,44 @@ export function salonLocalParts(date: Date): {
   };
 }
 
-export const DANI_DUGI = [
-  "nedjelja",
-  "ponedjeljak",
-  "utorak",
-  "srijeda",
-  "četvrtak",
-  "petak",
-  "subota",
-];
+export type OdbrojavanjeRezultat =
+  | { tip: "proslo" }
+  | { tip: "danas" }
+  | { tip: "sutra" }
+  | { tip: "zaDana"; dana: number };
 
-export const MJESECI = [
-  "januar",
-  "februar",
-  "mart",
-  "april",
-  "maj",
-  "jun",
-  "jul",
-  "avgust",
-  "septembar",
-  "oktobar",
-  "novembar",
-  "decembar",
-];
-
-function veliko(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+// "Srijeda, 18. jun" / "Tuesday, 18 June" prema vremenu salona.
+export function formatSalonDatumDugi(date: Date, locale = "bs"): string {
+  const intlLocale = locale === "en" ? "en-GB" : "sr-Latn";
+  return new Intl.DateTimeFormat(intlLocale, {
+    timeZone: SALON_TZ,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date);
 }
 
-// "Srijeda, 18. jun" (ijekavica) prema vremenu salona.
-export function formatSalonDatumDugi(date: Date): string {
-  const lp = salonLocalParts(date);
-  const dan = danUSedmici(lp.year, lp.month, lp.day);
-  return `${veliko(DANI_DUGI[dan])}, ${lp.day}. ${MJESECI[lp.month - 1]}`;
+// "18. jun" / "18 June" — kratko.
+export function formatSalonDatumKratki(date: Date, locale = "bs"): string {
+  const intlLocale = locale === "en" ? "en-GB" : "sr-Latn";
+  return new Intl.DateTimeFormat(intlLocale, {
+    timeZone: SALON_TZ,
+    day: "numeric",
+    month: "long",
+  }).format(date);
 }
 
-// "18. jun" — kratko.
-export function formatSalonDatumKratki(date: Date): string {
-  const lp = salonLocalParts(date);
-  return `${lp.day}. ${MJESECI[lp.month - 1]}`;
-}
-
-// Ljudsko odbrojavanje do termina: "danas", "sutra", "za 3 dana", "prošlo".
-export function odbrojavanje(date: Date): string {
+// Ljudsko odbrojavanje do termina (prevod na UI sloju).
+export function odbrojavanje(date: Date): OdbrojavanjeRezultat {
   const sada = salonLocalParts(new Date());
   const cilj = salonLocalParts(date);
   const a = Date.UTC(sada.year, sada.month - 1, sada.day);
   const b = Date.UTC(cilj.year, cilj.month - 1, cilj.day);
   const dana = Math.round((b - a) / 86_400_000);
-  if (dana < 0) return "prošlo";
-  if (dana === 0) return "danas";
-  if (dana === 1) return "sutra";
-  return `za ${dana} dana`;
+  if (dana < 0) return { tip: "proslo" };
+  if (dana === 0) return { tip: "danas" };
+  if (dana === 1) return { tip: "sutra" };
+  return { tip: "zaDana", dana };
 }
 
 // Parsira "YYYY-MM-DD" u {year, month, day}; vraća null ako format nije ispravan.

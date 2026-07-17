@@ -76,6 +76,14 @@ export default async function MojProfilPage({
   const ostali = nadolazeci.slice(1);
   const posljednjaPosjeta = protekli[0] ?? null;
 
+  function tekstOdbrojavanja(date: Date) {
+    const o = odbrojavanje(date);
+    if (o.tip === "proslo") return t("countdownPast");
+    if (o.tip === "danas") return t("countdownToday");
+    if (o.tip === "sutra") return t("countdownTomorrow");
+    return t("countdownInDays", { count: o.dana });
+  }
+
   const obim = 440;
   const popunjeno = Math.min(brojPoseta, 10) / 10;
   const offset = obim * (1 - popunjeno);
@@ -138,12 +146,12 @@ export default async function MojProfilPage({
                       {serviceName(sledeci.usluga?.naziv)}
                     </p>
                     <p className="font-body-md text-muted-gray">
-                      {formatSalonDatumDugi(sledeci.pocetak)} • {formatSalonTime(sledeci.pocetak)}h
+                      {formatSalonDatumDugi(sledeci.pocetak, locale)} • {formatSalonTime(sledeci.pocetak)}h
                     </p>
                   </div>
                   <div className="flex flex-col items-center rounded-lg border border-blood-red/20 bg-blood-red/10 px-6 py-4">
                     <span className="font-headline-lg text-3xl text-blood-red">
-                      {odbrojavanje(sledeci.pocetak)}
+                      {tekstOdbrojavanja(sledeci.pocetak)}
                     </span>
                     <span className="text-xs font-bold uppercase tracking-tighter text-blood-red/80">
                       {t("countdown")}
@@ -222,7 +230,7 @@ export default async function MojProfilPage({
                     <div>
                       <p className="font-bold text-on-surface">{serviceName(termin.usluga?.naziv)}</p>
                       <p className="text-xs text-muted-gray">
-                        {formatSalonDatumKratki(termin.pocetak)} • {formatSalonTime(termin.pocetak)}h
+                        {formatSalonDatumKratki(termin.pocetak, locale)} • {formatSalonTime(termin.pocetak)}h
                       </p>
                     </div>
                   </div>
@@ -248,7 +256,7 @@ export default async function MojProfilPage({
                   {t("lastVisit")}
                 </h2>
                 <p className="font-accent-label text-on-surface">
-                  {posljednjaPosjeta ? formatSalonDatumDugi(posljednjaPosjeta.pocetak) : t("noVisitsYet")}
+                  {posljednjaPosjeta ? formatSalonDatumDugi(posljednjaPosjeta.pocetak, locale) : t("noVisitsYet")}
                 </p>
               </div>
             </div>

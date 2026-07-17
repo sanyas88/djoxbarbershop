@@ -9,6 +9,7 @@ import { BookingCta } from "@/components/landing/BookingCta";
 import { Footer } from "@/components/landing/Footer";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { LandingEffects } from "@/components/landing/LandingEffects";
+import { BookingDraftRedirect } from "@/components/booking/BookingDraftRedirect";
 import { setRequestLocale } from "next-intl/server";
 
 export default async function Home({
@@ -21,6 +22,7 @@ export default async function Home({
 
   return (
     <>
+      <BookingDraftRedirect />
       <Header />
       <main className="pt-20">
         <Hero />
