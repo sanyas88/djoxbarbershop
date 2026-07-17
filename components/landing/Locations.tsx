@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { salonInfo, salonMapa } from "@/lib/landing-images";
+import { Icon } from "@/components/ui/Icon";
 
 export async function Locations() {
   const t = await getTranslations("locations");
@@ -33,17 +34,13 @@ export async function Locations() {
                 {salonInfo.naziv}
               </h3>
               <p className="mb-4 flex items-start gap-2 text-sm text-muted-gray">
-                <span className="material-symbols-outlined mt-0.5 shrink-0 text-base text-blood-red">
-                  call
-                </span>
+                <Icon name="call" className="mt-0.5 shrink-0 text-base text-blood-red" />
                 <a href={salonInfo.telefonLink} className="hover:text-blood-red transition-colors">
                   {salonInfo.telefon}
                 </a>
               </p>
               <p className="mb-6 flex items-start gap-2 text-sm text-muted-gray">
-                <span className="material-symbols-outlined mt-0.5 shrink-0 text-base text-blood-red">
-                  location_on
-                </span>
+                <Icon name="location_on" className="mt-0.5 shrink-0 text-base text-blood-red" />
                 {salonInfo.adresa}
               </p>
               <ul className="mb-8 flex flex-col gap-3 text-sm text-muted-gray">
@@ -70,7 +67,7 @@ export async function Locations() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-blood-red/40 bg-blood-red/10 px-6 py-3 text-xs font-bold uppercase tracking-widest text-pure-white transition-colors hover:bg-blood-red hover:text-pure-white"
             >
-              <span className="material-symbols-outlined text-base">directions</span>
+              <Icon name="directions" className="text-base" />
               {t("openMaps")}
             </a>
           </div>

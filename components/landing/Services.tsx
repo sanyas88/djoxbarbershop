@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { salonUsluge } from "@/lib/salon-usluge";
@@ -20,11 +21,12 @@ function ServiceCard({
   return (
     <div className="bg-surface-container rounded-2xl overflow-hidden border border-border-subtle hover:border-blood-red/50 transition-all group">
       <div className="relative h-64 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          alt={alt}
+        <Image
           src={src}
+          alt={alt}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 image-gradient-overlay"></div>
         <span className="absolute top-4 right-4 rounded-lg bg-blood-red px-3 py-1 text-xs font-bold uppercase tracking-widest text-pure-white">

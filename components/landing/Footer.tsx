@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { salonInfo } from "@/lib/landing-images";
+import { Icon } from "@/components/ui/Icon";
 
 export async function Footer() {
   const t = await getTranslations("footer");
@@ -11,7 +12,7 @@ export async function Footer() {
       <div className="max-w-[1280px] mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
         <div className="col-span-1 md:col-span-1">
           <div className="flex items-center gap-2 mb-6">
-            <span className="material-symbols-outlined text-blood-red text-3xl">content_cut</span>
+            <Icon name="content_cut" className="text-blood-red text-3xl" />
             <h1 className="font-headline-lg text-3xl tracking-tighter uppercase text-on-background">
               DJOX <span className="text-blood-red">BARBER</span>
             </h1>
@@ -32,14 +33,14 @@ export async function Footer() {
               rel="noopener noreferrer"
               aria-label="Instagram"
             >
-              <span className="material-symbols-outlined text-xl">photo_camera</span>
+              <Icon name="photo_camera" className="text-xl" />
             </a>
             <a
               className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-muted-gray hover:text-blood-red hover:bg-surface-container transition-all"
               href={salonInfo.telefonLink}
               aria-label="Phone"
             >
-              <span className="material-symbols-outlined text-xl">call</span>
+              <Icon name="call" className="text-xl" />
             </a>
           </div>
         </div>

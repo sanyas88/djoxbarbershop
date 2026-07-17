@@ -8,6 +8,7 @@ import { getOrCreateUser } from "@/lib/auth";
 import { withLocale } from "@/lib/locale-path";
 import { OtkaziDugme } from "@/components/profil/OtkaziDugme";
 import { serviceI18nKey } from "@/lib/service-i18n";
+import { Icon } from "@/components/ui/Icon";
 import {
   formatSalonDatumDugi,
   formatSalonDatumKratki,
@@ -97,7 +98,7 @@ export default async function MojProfilPage({
       <header className="fixed top-0 z-50 w-full border-b border-border-subtle bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-gutter">
           <Link href="/" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-3xl text-blood-red">content_cut</span>
+            <Icon name="content_cut" className="text-3xl text-blood-red" />
             <span className="font-headline-lg text-2xl uppercase tracking-tighter text-on-background md:text-3xl">
               DJOX <span className="text-blood-red">BARBERSHOP</span>
             </span>
@@ -133,7 +134,7 @@ export default async function MojProfilPage({
           <div className="relative flex min-h-[300px] flex-col justify-between overflow-hidden rounded-xl border border-border-subtle bg-surface-container p-stack-lg md:col-span-8">
             <div className="relative z-10">
               <div className="mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-blood-red">event_available</span>
+                <Icon name="event_available" className="text-blood-red" />
                 <h2 className="text-sm font-bold uppercase tracking-widest text-muted-gray">
                   {t("nextAppointment")}
                 </h2>
@@ -180,12 +181,7 @@ export default async function MojProfilPage({
             </div>
 
             <div className="pointer-events-none absolute -bottom-10 -right-10 opacity-5">
-              <span
-                className="material-symbols-outlined text-[200px]"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                content_cut
-              </span>
+              <Icon name="content_cut" className="text-[200px]" />
             </div>
           </div>
 
@@ -225,7 +221,7 @@ export default async function MojProfilPage({
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blood-red/10 text-blood-red">
-                      <span className="material-symbols-outlined">content_cut</span>
+                      <Icon name="content_cut" />
                     </div>
                     <div>
                       <p className="font-bold text-on-surface">{serviceName(termin.usluga?.naziv)}</p>
@@ -242,14 +238,14 @@ export default async function MojProfilPage({
               href="/zakazivanje"
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border-subtle py-4 font-button-text text-xs uppercase text-muted-gray transition-all hover:border-blood-red/40 hover:text-blood-red"
             >
-              <span className="material-symbols-outlined">add_circle</span> {t("bookNew")}
+              <Icon name="add_circle" /> {t("bookNew")}
             </Link>
           </div>
 
           <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
             <div className="flex items-center gap-6 rounded-xl border border-border-subtle bg-surface-container p-stack-lg">
               <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-blood-red/10 text-blood-red">
-                <span className="material-symbols-outlined text-3xl">history</span>
+                <Icon name="history" className="text-3xl" />
               </div>
               <div>
                 <h2 className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-gray">

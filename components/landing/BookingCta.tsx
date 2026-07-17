@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { landingImages, salonInfo } from "@/lib/landing-images";
@@ -9,11 +10,12 @@ export async function BookingCta() {
   return (
     <section id="rezervacija" className="py-section-gap relative overflow-hidden">
       <div className="absolute inset-0 z-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="w-full h-full object-cover opacity-20 grayscale"
-          alt={t("bgAlt")}
+        <Image
           src={landingImages.bookingBg}
+          alt={t("bgAlt")}
+          fill
+          sizes="100vw"
+          className="object-cover opacity-20 grayscale"
         />
       </div>
       <div className="max-w-3xl mx-auto px-gutter relative z-10 text-center">

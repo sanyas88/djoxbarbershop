@@ -1,11 +1,13 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { landingImages, salonInfo } from "@/lib/landing-images";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
-function Feature({ icon, label }: { icon: string; label: string }) {
+function Feature({ icon, label }: { icon: IconName; label: string }) {
   return (
     <div className="flex items-center gap-4">
       <div className="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-blood-red">
-        <span className="material-symbols-outlined">{icon}</span>
+        <Icon name={icon} className="text-2xl" />
       </div>
       <span className="font-accent-label text-pure-white uppercase text-sm tracking-widest">{label}</span>
     </div>
@@ -29,12 +31,15 @@ export async function About() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div className="relative">
           <div className="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-blood-red"></div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="rounded-xl border border-border-subtle w-full h-[600px] object-cover"
-            alt={t("imageAlt")}
-            src={landingImages.about}
-          />
+          <div className="relative h-[600px] w-full overflow-hidden rounded-xl border border-border-subtle">
+            <Image
+              src={landingImages.about}
+              alt={t("imageAlt")}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
           <div className="absolute -bottom-10 -right-10 bg-charcoal-bg p-8 rounded-xl border border-border-subtle shadow-xl hidden md:block">
             <span className="font-script text-blood-red text-4xl">{t("cardTitle")}</span>
             <p className="text-muted-gray mt-2">{salonInfo.slogan}</p>

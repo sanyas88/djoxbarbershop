@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { landingImages } from "@/lib/landing-images";
@@ -11,11 +12,13 @@ export async function Hero() {
       className="relative min-h-[min(92vh,860px)] flex items-center overflow-hidden"
     >
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="absolute inset-0 h-full w-full object-cover object-[70%_center] md:object-[right_center]"
-          alt=""
+        <Image
           src={landingImages.hero}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[70%_center] md:object-[right_center]"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background from-35% via-background/85 via-50% to-background/20 md:from-30% md:via-45% md:to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-background/30 md:from-background/40" />

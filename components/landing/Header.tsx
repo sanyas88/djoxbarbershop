@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { HeaderAuth } from "@/components/auth/HeaderAuth";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
+import { Icon } from "@/components/ui/Icon";
 
 export async function Header() {
   const t = await getTranslations("nav");
@@ -10,7 +11,7 @@ export async function Header() {
     <header className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-md border-b border-border-subtle shadow-sm h-20">
       <div className="flex justify-between items-center h-full px-gutter max-w-[1280px] mx-auto">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-blood-red text-3xl">content_cut</span>
+          <Icon name="content_cut" className="text-blood-red text-3xl" />
           <h1 className="font-headline-lg text-3xl tracking-tighter uppercase text-on-background">
             DJOX <span className="text-blood-red">BARBERSHOP</span>
           </h1>

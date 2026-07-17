@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
-function BrandItem({ icon, label }: { icon: string; label: string }) {
+function BrandItem({ icon, label }: { icon: IconName; label: string }) {
   return (
     <div className="flex items-center gap-4 text-primary font-headline-lg text-2xl uppercase">
-      <span className="material-symbols-outlined">{icon}</span> {label}
+      <Icon name={icon} /> {label}
     </div>
   );
 }

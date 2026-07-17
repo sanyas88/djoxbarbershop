@@ -8,6 +8,7 @@ import { getOrCreateUser } from "@/lib/auth";
 import { withLocale } from "@/lib/locale-path";
 import { BlokadaForma } from "@/components/admin/BlokadaForma";
 import { AdminAkcijaDugme } from "@/components/admin/AdminAkcijaDugme";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import {
   salonLocalParts,
   salonWallToUtc,
@@ -167,7 +168,12 @@ export default async function AdminPage({
   const ime = (u: { ime: string; prezime: string }) =>
     `${u.ime}${u.prezime ? ` ${u.prezime.charAt(0)}.` : ""}`.trim() || "Klijent";
 
-  const kartice = [
+  const kartice: {
+    oznaka: string;
+    ikona: IconName;
+    vrijednost: string;
+    opis: string;
+  }[] = [
     {
       oznaka: "Danas",
       ikona: "calendar_today",
@@ -200,9 +206,7 @@ export default async function AdminPage({
       <header className="fixed top-0 z-50 w-full border-b border-border-subtle bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-gutter">
           <Link href="/" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-3xl text-blood-red">
-              content_cut
-            </span>
+            <Icon name="content_cut" className="text-3xl text-blood-red" />
             <span className="font-headline-lg text-2xl uppercase tracking-tighter text-on-background md:text-3xl">
               DJOX <span className="text-blood-red">BARBERSHOP</span>
             </span>
@@ -256,9 +260,7 @@ export default async function AdminPage({
                 <p className="font-caption uppercase tracking-widest text-muted-gray">
                   {k.oznaka}
                 </p>
-                <span className="material-symbols-outlined text-blood-red">
-                  {k.ikona}
-                </span>
+                <Icon name={k.ikona} className="text-blood-red" />
               </div>
               <h3 className="font-headline-lg text-3xl text-pure-white transition-transform duration-300 group-hover:scale-105 md:text-4xl">
                 {k.vrijednost}
@@ -346,7 +348,7 @@ export default async function AdminPage({
             <div className="rounded-xl border border-border-subtle bg-surface-container-low">
               <div className="flex items-center justify-between border-b border-border-subtle bg-surface-container-high/30 p-6">
                 <h3 className="font-accent-label text-pure-white">Blokiraj termin</h3>
-                <span className="material-symbols-outlined text-blood-red">block</span>
+                <Icon name="block" className="text-blood-red" />
               </div>
               <div className="p-6">
                 <p className="mb-stack-md text-caption text-muted-gray">

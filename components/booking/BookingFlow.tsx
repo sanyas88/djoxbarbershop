@@ -13,6 +13,7 @@ import {
   loadBookingDraft,
   clearBookingDraft,
 } from "@/lib/booking-draft";
+import { Icon } from "@/components/ui/Icon";
 
 type Usluga = {
   id: string;
@@ -556,7 +557,7 @@ export function BookingFlow() {
       {korak === 4 && (
         <div className="text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blood-red">
-            <span className="material-symbols-outlined text-3xl text-pure-white">check</span>
+            <Icon name="check" className="text-3xl text-pure-white" />
           </div>
           <h2 className="font-headline-lg text-4xl uppercase text-pure-white">
             {t("successTitle")}
@@ -661,9 +662,7 @@ function PorukaGreske({ tekst }: { tekst: string }) {
       role="alert"
       className="mb-6 flex items-start gap-3 rounded-xl border border-blood-red/50 bg-blood-red/15 px-4 py-4 text-sm text-pure-white"
     >
-      <span className="material-symbols-outlined shrink-0 text-blood-red" aria-hidden>
-        event_busy
-      </span>
+      <Icon name="event_busy" className="shrink-0 text-blood-red" aria-hidden />
       <p className="leading-relaxed text-blood-red">{tekst}</p>
     </div>
   );

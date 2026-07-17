@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/ui/Icon";
 
 const DAN_NAZIV = ["Ned", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"];
 const MJESEC_NAZIV = [
@@ -188,7 +189,7 @@ export function BlokadaForma() {
         disabled={slanje}
         className="haptic-active flex w-full items-center justify-center gap-2 rounded-lg bg-blood-red py-4 font-button-text text-xs uppercase tracking-widest text-pure-white transition-all hover:brightness-110 disabled:opacity-60"
       >
-        <span className="material-symbols-outlined text-base">block</span>
+        <Icon name="block" className="text-base" />
         {slanje ? "Blokiram…" : "Blokiraj termin"}
       </button>
     </form>

@@ -1,20 +1,20 @@
-// Slike za landing — zamijeni URL-ove svojim fotografijama kad budu spremne.
+// Slike za landing — WebP (kompresovano za LCP / Lighthouse).
 export const landingImages = {
-  hero: "/images/hero-barbershop.png",
-  about: "/images/about-barbershop.png",
+  hero: "/images/hero-barbershop.webp",
+  about: "/images/about-barbershop.webp",
   services: {
-    sisanje: "/images/service-sisanje.png",
-    izbrijavanje: "/images/service-izbrijavanje.png",
-    brada: "/images/service-brada.png",
-    pranje: "/images/service-pranje.png",
+    sisanje: "/images/service-sisanje.webp",
+    izbrijavanje: "/images/service-izbrijavanje.webp",
+    brada: "/images/service-brada.webp",
+    pranje: "/images/service-pranje.webp",
   },
   gallery: {
-    main: "/images/gallery-main.png",
-    alat: "/images/gallery-alat.png",
-    brijanje: "/images/gallery-brijanje.png",
-    salon: "/images/gallery-salon.png",
+    main: "/images/gallery-main.webp",
+    alat: "/images/gallery-alat.webp",
+    brijanje: "/images/gallery-brijanje.webp",
+    salon: "/images/gallery-salon.webp",
   },
-  bookingBg: "/images/booking-bg.png",
+  bookingBg: "/images/booking-bg.webp",
 } as const;
 
 // Podaci salona.

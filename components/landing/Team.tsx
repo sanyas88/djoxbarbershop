@@ -1,3 +1,5 @@
+import { Icon } from "@/components/ui/Icon";
+
 function TeamMember({
   src,
   alt,
@@ -19,8 +21,8 @@ function TeamMember({
           src={src}
         />
         <div className="absolute bottom-0 left-0 w-full p-6 translate-y-full group-hover:translate-y-0 transition-transform bg-blood-red/90 flex justify-center gap-4">
-          <span className="material-symbols-outlined text-pure-white cursor-pointer hover:scale-125">share</span>
-          <span className="material-symbols-outlined text-pure-white cursor-pointer hover:scale-125">star</span>
+          <Icon name="share" className="text-pure-white cursor-pointer hover:scale-125" />
+          <Icon name="star" className="text-pure-white cursor-pointer hover:scale-125" />
         </div>
       </div>
       <h3 className="font-headline-lg text-2xl uppercase text-pure-white">{name}</h3>

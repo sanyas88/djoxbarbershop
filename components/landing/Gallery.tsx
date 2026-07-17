@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { landingImages } from "@/lib/landing-images";
+import { Icon } from "@/components/ui/Icon";
 
 function GalleryItem({
   src,
@@ -14,15 +16,16 @@ function GalleryItem({
 }) {
   return (
     <div className={`overflow-hidden rounded-2xl border border-border-subtle group relative ${className}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
-        alt={alt}
+      <Image
         src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 66vw, 850px"
+        className="object-cover transition-transform duration-1000 group-hover:scale-105"
       />
       {withOverlay && (
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <span className="material-symbols-outlined text-pure-white text-4xl">visibility</span>
+          <Icon name="visibility" className="text-pure-white text-4xl" />
         </div>
       )}
     </div>

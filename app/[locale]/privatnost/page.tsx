@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { Icon } from "@/components/ui/Icon";
 
 export async function generateMetadata({
   params,
@@ -35,9 +36,7 @@ export default async function PrivatnostPage({
       <header className="border-b border-border-subtle">
         <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-gutter">
           <Link href="/" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-3xl text-blood-red">
-              content_cut
-            </span>
+            <Icon name="content_cut" className="text-3xl text-blood-red" />
             <span className="font-headline-lg text-2xl uppercase tracking-tighter text-on-background">
               DJOX <span className="text-blood-red">BARBERSHOP</span>
             </span>
